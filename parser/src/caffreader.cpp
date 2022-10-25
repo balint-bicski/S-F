@@ -1,6 +1,7 @@
 #include <string.h>
 
-#include "reader.h"
+#include "caffreader.h"
+#include "ciffreader.h"
 
 CAFFReader::CAFFReader() : parse_called(false), parse_successful(false), data() {}
 
@@ -13,6 +14,8 @@ CAFF CAFFReader::get() {
 }
 
 bool CAFFReader::parse(std::istream& stream) {
+    this->parse_called = true;
+
     u8 id;
     u64 block_length;
     bool success = false;
@@ -35,11 +38,17 @@ bool CAFFReader::parse(std::istream& stream) {
         switch (id) {
             case 1: success = this->read_header(stream, expected_length); break;
             case 2: success = this->read_credits(stream, expected_length); break;
-            case 3: success = this->read_ciff(stream, expected_length); break;
+            case 3: success = this->read_frame(stream, expected_length); break;
             default: return false;
         }
     } while (stream && success);
 
+    /* Assert that we read exactly as many frames as the CAFF header said there would be. */
+    if (this->data.frames.size() != this->data.ciff_count) {
+        success = false;
+    }
+
+    this->parse_successful = success;
     return success;
 }
 
@@ -115,6 +124,31 @@ bool CAFFReader::read_credits(std::istream& stream, u64 expected_size) {
     return true;
 }
 
-bool CAFFReader::read_ciff(std::istream& stream, u64 expected_size) {
-    // TODO Assert that this ciff + number of read ciffs <= expected frame count.
+bool CAFFReader::read_frame(std::istream& stream, u64 expected_size) {
+    /* Assert that by reading this CIFF, the read CIFF count does not go over the expected amount. */
+    if (this->data.frames.size() + 1 > this->data.ciff_count) {
+        return false;
+    }
+
+    /* Read eight bytes containing the frame duration. */
+    u64 duration;
+    stream.read((char*) &duration, sizeof(u64));
+    if (!stream) {
+        return false;
+    }
+
+    /* Read the CIFF file that follows. */
+    CIFFReader reader;
+    bool success = reader.parse(stream, expected_size - 8);
+    if (!success) {
+        return false;
+    }
+
+    /* If everything succeeded, save the compiled frame. */
+    Frame frame;
+    frame.duration = duration;
+    frame.image = reader.get();
+
+    this->data.frames.push_back(frame);
+    return true;
 }

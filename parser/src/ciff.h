@@ -13,7 +13,7 @@ struct CIFF {
     std::string caption;
     std::vector<std::string> tags;
 
-    u8* pixels;
+    u8* pixels; // TODO This WILL create a memory leak! Must create a correct destructor!
 };
 
 #endif

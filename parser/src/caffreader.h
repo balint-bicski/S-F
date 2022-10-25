@@ -1,5 +1,5 @@
-#ifndef READER_H
-#define READER_H
+#ifndef CAFFREADER_H
+#define CAFFREADER_H
 
 #include <istream>
 
@@ -13,7 +13,7 @@ class CAFFReader {
 
     bool read_header(std::istream& stream, u64 expected_size);
     bool read_credits(std::istream& stream, u64 expected_size);
-    bool read_ciff(std::istream& stream, u64 expected_size);
+    bool read_frame(std::istream& stream, u64 expected_size);
 
 public:
     CAFFReader();
