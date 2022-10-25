@@ -5,7 +5,7 @@
 
 int main() {
     CAFFReader reader;
-    const char* name = "res/3.caff";
+    const char* name = "res/1.caff";
 
     std::ifstream file(name);
     if (file.is_open()) {

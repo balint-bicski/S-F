@@ -1,7 +1,9 @@
+#include <algorithm>
 #include <string.h>
 
 #include "caffreader.h"
 #include "ciffreader.h"
+#include "debug.h"
 
 CAFFReader::CAFFReader() : parse_called(false), parse_successful(false), data() {}
 
@@ -13,38 +15,39 @@ CAFF CAFFReader::get() {
     throw "CAFFReader::get called without a successful parse first!";
 }
 
-bool CAFFReader::parse(std::istream& stream) {
+bool CAFFReader::parse(std::istream& in_stream) {
     this->parse_called = true;
 
-    u8 id;
-    u64 block_length;
+    Stream stream(in_stream);
+
     bool success = false;
     bool first = true;
 
     /* All blocks will be read in a loop. At least one iteration is guaranteed. */
     do {
         /* Read block metadata and assert that further data is present. */
-        stream.read((char*) &id, sizeof(u8));
-        stream.read((char*) &block_length, sizeof(u64));
+        u8 id = stream.read8();
+        u64 block_length = stream.read64();
 
         /* The first block must be a header block. */
         if (!stream || (first && id != 1)) {
+            debug("CAFFReader::parse: First block was not a header block or stream ended!\n");
             return false;
         }
         first = false;
 
         /* Read block contents based on the given ID. */
-        u64 expected_length = block_length - 8 - 1;
         switch (id) {
-            case 1: success = this->read_header(stream, expected_length); break;
-            case 2: success = this->read_credits(stream, expected_length); break;
-            case 3: success = this->read_frame(stream, expected_length); break;
-            default: return false;
+            case 1: success = this->read_header(stream, block_length); break;
+            case 2: success = this->read_credits(stream, block_length); break;
+            case 3: success = this->read_frame(stream, block_length); break;
+            default: debug("CAFFReader::parse: Invalid block id detected!\n"); return false;
         }
-    } while (stream && success);
+    } while (stream && stream.peek() != EOF && success);
 
     /* Assert that we read exactly as many frames as the CAFF header said there would be. */
-    if (this->data.frames.size() != this->data.ciff_count) {
+    if (success && this->data.frames.size() != this->data.ciff_count) {
+        debug("CAFFReader::parse: All blocks read, but expected and actual frame count differs!\n");
         success = false;
     }
 
@@ -52,30 +55,41 @@ bool CAFFReader::parse(std::istream& stream) {
     return success;
 }
 
-bool CAFFReader::read_header(std::istream& stream, u64 expected_size) {
+bool CAFFReader::read_header(Stream& stream, u64 expected_size) {
     /* Assert that the expected size equals to 4+8+8 bytes. */
     if (expected_size != 4 + 8 + 8) {
-        return false;
+        debug("CAFFReader::read_header: Header expected size differs from mandatory size!\n");
+        debug("                         This may not be an error, switching to big endian parsing!\n");
+
+        std::reverse((char*) &expected_size, (char*) &expected_size + 8);
+
+        if (expected_size == 4 + 8 + 8) {
+            stream.set_big_endian(true);
+        } else {
+            debug("CAFFReader::read_header: Header expected size differs from mandatory size even with little endian encoding!\n");
+            return false;
+        }
     }
 
     /* Assert that the first four bytes contain the magic keyword. */
     char magic[4];
     stream.read(magic, 4);
-    if (!strncmp(magic, "CAFF", 4) || !stream) {
+    if (strncmp(magic, "CAFF", 4) != 0 || !stream) {
+        debug("CAFFReader::read_header: Magic four bytes not present, or stream ended!\n");
         return false;
     }
 
     /* Assert that the next eight bytes contain the correct header size. */
-    u64 header_size;
-    stream.read((char*) &header_size, sizeof(u64));
+    u64 header_size = stream.read64();
     if (header_size != expected_size || !stream) {
+        debug("CAFFReader::read_header: Expected and parsed header sizes differ, or stream ended!\n");
         return false;
     }
 
     /* Read the next eight bytes containing the number of frames. */
-    u64 num_anim;
-    stream.read((char*) &num_anim, sizeof(u64));
+    u64 num_anim = stream.read64();
     if (!stream) {
+        debug("CAFFReader::read_header: Stream ended after reading animation frame count!\n");
         return false;
     }
 
@@ -84,25 +98,26 @@ bool CAFFReader::read_header(std::istream& stream, u64 expected_size) {
     return true;
 }
 
-bool CAFFReader::read_credits(std::istream& stream, u64 expected_size) {
+bool CAFFReader::read_credits(Stream& stream, u64 expected_size) {
     Credits credits;
 
     /* Read all fields of the creation date. */
-    stream.read((char*) &credits.year, sizeof(u16));
-    stream.read((char*) &credits.month, sizeof(u8));
-    stream.read((char*) &credits.day, sizeof(u8));
-    stream.read((char*) &credits.hour, sizeof(u8));
-    stream.read((char*) &credits.minute, sizeof(u8));
+    credits.year = stream.read16();
+    credits.month = stream.read8();
+    credits.day = stream.read8();
+    credits.hour = stream.read8();
+    credits.minute = stream.read8();
     if (!stream) {
+        debug("CAFFReader::read_credits: Stream ended after reading creation date!\n");
         return false;
     }
 
     /* Read the expected creator len. */
-    u64 creator_len;
-    stream.read((char*) &creator_len, sizeof(u64));
+    u64 creator_len = stream.read64();
 
     /* Assert that the expected size matches with the calculated size. */
     if (expected_size != (2 + 1 + 1 + 1 + 1) + 8 + creator_len || !stream) {
+        debug("CAFFReader::read_credits: Expected size not equal to parsed size, or stream ended!\n");
         return false;
     }
 
@@ -111,6 +126,7 @@ bool CAFFReader::read_credits(std::istream& stream, u64 expected_size) {
     char* creator_buffer = new char[creator_len];
     stream.read(creator_buffer, creator_len);
     if (!stream) {
+        debug("CAFFReader::read_credits: Stream ended after reading creator name!\n");
         delete[] creator_buffer;
         return false;
     }
@@ -124,16 +140,17 @@ bool CAFFReader::read_credits(std::istream& stream, u64 expected_size) {
     return true;
 }
 
-bool CAFFReader::read_frame(std::istream& stream, u64 expected_size) {
+bool CAFFReader::read_frame(Stream& stream, u64 expected_size) {
     /* Assert that by reading this CIFF, the read CIFF count does not go over the expected amount. */
     if (this->data.frames.size() + 1 > this->data.ciff_count) {
+        debug("CAFFReader::read_frame: By reading this frame, we go over the expected CIFF count!\n");
         return false;
     }
 
     /* Read eight bytes containing the frame duration. */
-    u64 duration;
-    stream.read((char*) &duration, sizeof(u64));
+    u64 duration = stream.read64();
     if (!stream) {
+        debug("CAFFReader::read_frame: Stream ended after reading frame duration!\n");
         return false;
     }
 
@@ -141,6 +158,7 @@ bool CAFFReader::read_frame(std::istream& stream, u64 expected_size) {
     CIFFReader reader;
     bool success = reader.parse(stream, expected_size - 8);
     if (!success) {
+        debug("CAFFReader::read_frame: CIFF parse was unsuccessful!\n");
         return false;
     }
 
