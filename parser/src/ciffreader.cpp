@@ -35,7 +35,7 @@ bool CIFFReader::parse(std::istream& stream, u64 expected_size) {
     /* Read the width and height of the image. */
     u64 width, height;
     stream.read((char*) &width, sizeof(u64));
-    stream.read((char*) height, sizeof(u64));
+    stream.read((char*) &height, sizeof(u64));
 
     /* Assert that the calculated payload size matches the expected content size. */
     if (width * height * 3 != content_size || !stream) {
@@ -133,7 +133,7 @@ bool CIFFReader::read_caption_and_tags(std::istream& stream, u64 expected_size) 
 
 bool CIFFReader::read_pixels(std::istream& stream, u64 expected_size) {
     /* Preallocate a large enough buffer. */
-    u8 buffer[expected_size];
+    u8* buffer = new u8[expected_size];
 
     /* Read content into buffer. */
     stream.read((char*) buffer, expected_size);

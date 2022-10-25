@@ -88,11 +88,11 @@ bool CAFFReader::read_credits(std::istream& stream, u64 expected_size) {
     Credits credits;
 
     /* Read all fields of the creation date. */
-    stream.read((char*) credits.year, sizeof(u16));
-    stream.read((char*) credits.month, sizeof(u8));
-    stream.read((char*) credits.day, sizeof(u8));
-    stream.read((char*) credits.hour, sizeof(u8));
-    stream.read((char*) credits.minute, sizeof(u8));
+    stream.read((char*) &credits.year, sizeof(u16));
+    stream.read((char*) &credits.month, sizeof(u8));
+    stream.read((char*) &credits.day, sizeof(u8));
+    stream.read((char*) &credits.hour, sizeof(u8));
+    stream.read((char*) &credits.minute, sizeof(u8));
     if (!stream) {
         return false;
     }

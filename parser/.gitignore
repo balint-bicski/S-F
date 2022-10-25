@@ -1,4 +1,5 @@
 .vscode/
 build/
+res/
 
 caff_parser
