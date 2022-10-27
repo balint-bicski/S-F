@@ -1,3 +1,4 @@
+#include <cstring>
 #include <iomanip>
 #include <iostream>
 
@@ -61,6 +62,93 @@ void CIFF::print_metadata(std::ostream& stream, u8 prefix) const {
     stream << padding << "  width: " << this->width << "," << std::endl;
     stream << padding << "  height: " << this->height << "," << std::endl;
     stream << padding << "  caption: \"" << this->caption << "\"," << std::endl;
-    stream << padding << "  tags: " /*TODO*/ << std::endl;
+    {
+        stream << padding << "  tags: [";
+        for (const std::string& tag : this->tags) {
+            stream << "\"" << tag << "\"";
+            if (&tag != &this->tags.back()) {
+                stream << ", ";
+            }
+        }
+        stream << "]," << std::endl;
+    }
+    stream << padding << "  content_size: " << this->pixels_size << std::endl;
     stream << padding << "}";
+}
+
+CIFF::CIFF() {
+    this->pixels = NULL;
+    this->pixels_size = 0;
+}
+
+CIFF::CIFF(const CIFF& from) {
+    this->width = from.width;
+    this->height = from.height;
+    this->caption = from.caption;
+    this->tags = from.tags;
+
+    this->pixels = NULL;
+    this->pixels_size = 0;
+
+    if (from.pixels != NULL) {
+        this->pixels = new u8[from.pixels_size];
+        strncpy((char*) this->pixels, (char*) from.pixels, from.pixels_size);
+        this->pixels_size = from.pixels_size;
+    }    
+}
+
+CIFF::CIFF(CIFF&& from) {
+    this->width = from.width;
+    this->height = from.height;
+    this->caption = std::move(from.caption);
+    this->tags = std::move(from.tags);
+
+    this->pixels = from.pixels;
+    this->pixels_size = from.pixels_size;
+    from.pixels = NULL;
+    from.pixels_size = 0;
+}
+
+CIFF& CIFF::operator=(const CIFF& from) {
+    this->width = from.width;
+    this->height = from.height;
+    this->caption = from.caption;
+    this->tags = from.tags;
+
+    if (this->pixels != NULL) {
+        delete[] this->pixels;
+        this->pixels = NULL;
+        this->pixels_size = 0;
+    }
+
+    if (from.pixels != NULL) {
+        this->pixels = new u8[from.pixels_size];
+        strncpy((char*) this->pixels, (char*) from.pixels, from.pixels_size);
+        this->pixels_size = from.pixels_size;
+    }
+
+    return *this;
+}
+
+CIFF& CIFF::operator=(CIFF&& from) {
+    this->width = from.width;
+    this->height = from.height;
+    this->caption = std::move(from.caption);
+    this->tags = std::move(from.tags);
+
+    if (this->pixels != NULL) {
+        delete[] this->pixels;
+    }
+    this->pixels = from.pixels;
+    this->pixels_size = from.pixels_size;
+    from.pixels = NULL;
+    from.pixels_size = 0;
+
+    return *this;
+}
+
+CIFF::~CIFF() {
+    if (this->pixels != NULL) {
+        delete[] this->pixels;
+    }
 }

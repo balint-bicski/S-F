@@ -156,5 +156,6 @@ bool CIFFReader::read_pixels(Stream& stream, u64 expected_size) {
 
     /* Save parsed data. */
     this->data.pixels = buffer;
+    this->data.pixels_size = expected_size;
     return true;
 }

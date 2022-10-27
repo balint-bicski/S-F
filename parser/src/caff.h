@@ -13,9 +13,19 @@ struct CIFF {
     std::string caption;
     std::vector<std::string> tags;
 
-    u8* pixels; // TODO This WILL create a memory leak! Must create a correct destructor!
+    u8* pixels;
+    u64 pixels_size;
 
     void print_metadata(std::ostream& stream, u8 prefix = 0) const;
+
+    CIFF();
+    CIFF(const CIFF& from);
+    CIFF(CIFF&& from);
+
+    CIFF& operator=(const CIFF& from);
+    CIFF& operator=(CIFF&& from);
+
+    ~CIFF();
 };
 
 struct Frame {
