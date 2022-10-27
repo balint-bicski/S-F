@@ -163,10 +163,6 @@ bool CAFFReader::read_frame(Stream& stream, u64 expected_size) {
     }
 
     /* If everything succeeded, save the compiled frame. */
-    Frame frame;
-    frame.duration = duration;
-    frame.image = reader.get();
-
-    this->data.frames.push_back(frame);
+    this->data.frames.push_back(Frame { reader.get(), duration });
     return true;
 }

@@ -3,7 +3,7 @@
 
 #include <istream>
 
-#include "ciff.h"
+#include "caff.h"
 #include "types.h"
 #include "streamwrapper.h"
 

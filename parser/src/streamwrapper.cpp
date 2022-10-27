@@ -13,14 +13,14 @@ std::istream& Stream::get_stream() {
 }
 
 u8 Stream::read8() {
-    u8 target;
+    u8 target = 0;
     this->stream.read((char*) &target, 1);
     
     return target;
 }
 
 u16 Stream::read16() {
-    u16 target;
+    u16 target = 0;
     this->stream.read((char*) &target, 2);
 
     if (this->is_big_endian) {
@@ -31,7 +31,7 @@ u16 Stream::read16() {
 }
 
 u64 Stream::read64() {
-    u64 target;
+    u64 target = 0;
     this->stream.read((char*) &target, 8);
     
     if (this->is_big_endian) {

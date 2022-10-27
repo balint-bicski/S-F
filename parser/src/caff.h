@@ -4,12 +4,25 @@
 #include <string>
 #include <vector>
 
-#include "ciff.h"
 #include "types.h"
+
+struct CIFF {
+    u64 width;
+    u64 height;
+
+    std::string caption;
+    std::vector<std::string> tags;
+
+    u8* pixels; // TODO This WILL create a memory leak! Must create a correct destructor!
+
+    void print_metadata(std::ostream& stream, u8 prefix = 0) const;
+};
 
 struct Frame {
     CIFF image;
     u64 duration;
+
+    void print_metadata(std::ostream& stream, u8 prefix = 0) const;
 };
 
 struct Credits {
@@ -20,6 +33,8 @@ struct Credits {
     u8 minute;
 
     std::string creator;
+
+    void print_metadata(std::ostream& stream, u8 prefix = 0) const;
 };
 
 struct CAFF {
@@ -27,6 +42,8 @@ struct CAFF {
     Credits credits;
 
     std::vector<Frame> frames;
+
+    void print_metadata(std::ostream& stream, u8 prefix = 0) const;
 };
 
 #endif

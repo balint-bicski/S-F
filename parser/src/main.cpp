@@ -12,10 +12,8 @@ int main() {
         bool success = reader.parse(file);
         if (success) {
             CAFF caff = reader.get();
-            std::cout << "Parsing successful, some test metadata: " << std::endl;
-            std::cout << "Creator: " << caff.credits.creator << std::endl;
-            std::cout << "CIFF count: " << caff.ciff_count << std::endl;
-            std::cout << "Size of first frame: " << caff.frames.at(0).image.width << "x" << caff.frames.at(0).image.height << std::endl;
+            std::cout << "Parsing successful, metadata output: " << std::endl;
+            caff.print_metadata(std::cout);
         } else {
             std::cout << "Parsing failed for file: " << name << std::endl;
         }
