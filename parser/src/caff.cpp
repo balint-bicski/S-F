@@ -92,7 +92,7 @@ CIFF::CIFF(const CIFF& from) {
 
     if (from.pixels != NULL) {
         this->pixels = new u8[from.pixels_size];
-        strncpy((char*) this->pixels, (char*) from.pixels, from.pixels_size);
+        memcpy((char*) this->pixels, (char*) from.pixels, from.pixels_size);
         this->pixels_size = from.pixels_size;
     }    
 }
@@ -123,7 +123,7 @@ CIFF& CIFF::operator=(const CIFF& from) {
 
     if (from.pixels != NULL) {
         this->pixels = new u8[from.pixels_size];
-        strncpy((char*) this->pixels, (char*) from.pixels, from.pixels_size);
+        memcpy((char*) this->pixels, (char*) from.pixels, from.pixels_size);
         this->pixels_size = from.pixels_size;
     }
 
