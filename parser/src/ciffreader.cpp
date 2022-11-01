@@ -87,6 +87,11 @@ bool CIFFReader::read_caption_and_tags(Stream& stream, u64 expected_size) {
             return false;
         }
 
+        if (c == '\0') {
+            debug("CIFFReader::read_caption_and_tags: Caption contains null character!\n");
+            return false;
+        }
+
         if (c == '\n') {
             break;
         }

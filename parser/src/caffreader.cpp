@@ -121,18 +121,24 @@ bool CAFFReader::read_credits(Stream& stream, u64 expected_size) {
         return false;
     }
 
-    // TODO Choose and enforce a sensible maximum buffer size!
     /* Read and check creator name. */
-    char* creator_buffer = new char[creator_len];
+    char* creator_buffer = new char[creator_len + 1];
     stream.read(creator_buffer, creator_len);
     if (!stream) {
         debug("CAFFReader::read_credits: Stream ended after reading creator name!\n");
         delete[] creator_buffer;
         return false;
     }
+    /* creator_len is both the size of the field and length of the string (non-terminating) */
+    creator_buffer[creator_len] = 0;
+    if(strnlen(creator_buffer, creator_len + 1) != creator_len) {
+        debug("CAFFReader::read_credits: Length of creator name is fishy!\n");
+        delete[] creator_buffer;
+        return false;
+    }
 
     /* Copy the creator name into a string, free buffer. */
-    credits.creator = std::string(creator_buffer, creator_len);
+    credits.creator = std::string(creator_buffer, creator_len + 1);
     delete[] creator_buffer;
 
     /* Save parsed data. */
