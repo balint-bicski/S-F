@@ -47,13 +47,20 @@ struct Credits {
     void print_metadata(std::ostream& stream, u8 prefix = 0) const;
 };
 
-struct CAFF {
+class CAFF {
+    bool is_preview_created;
+    const char* preview_location;
+
+public:
     u64 ciff_count;
     Credits credits;
 
     std::vector<Frame> frames;
 
+    CAFF();
+
     void print_metadata(std::ostream& stream, u8 prefix = 0) const;
+    bool create_preview(u64 frame_number, const char* file);
 };
 
 #endif

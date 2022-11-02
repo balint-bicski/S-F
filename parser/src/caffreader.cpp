@@ -138,7 +138,7 @@ bool CAFFReader::read_credits(Stream& stream, u64 expected_size) {
     }
 
     /* Copy the creator name into a string, free buffer. */
-    credits.creator = std::string(creator_buffer, creator_len + 1);
+    credits.creator = std::string(creator_buffer, creator_len);
     delete[] creator_buffer;
 
     /* Save parsed data. */

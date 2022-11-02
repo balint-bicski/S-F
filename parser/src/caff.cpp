@@ -4,6 +4,8 @@
 
 #include "caff.h"
 
+CAFF::CAFF() : is_preview_created(false), preview_location(NULL) {}
+
 void CAFF::print_metadata(std::ostream& stream, u8 prefix) const {
     std::string padding(prefix, ' ');
     
@@ -24,7 +26,16 @@ void CAFF::print_metadata(std::ostream& stream, u8 prefix) const {
             }
             stream << std::endl;
         }
-        stream << padding << "  ]" << std::endl;
+        stream << padding << "  ]," << std::endl;
+    }
+    {
+        stream << padding << "  preview_created: ";
+        stream << (this->is_preview_created ? "\"yes\"" : "\"no\"");
+        if (this->is_preview_created) {
+            stream << "," << std::endl;
+            stream << padding << "  preview_location: \"" << this->preview_location << "\"";
+        }
+        stream << std::endl;
     }
     stream << padding << "}" << std::endl;
 }

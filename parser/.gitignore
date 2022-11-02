@@ -3,3 +3,4 @@ build/
 res/
 
 caff_parser
+*.bmp
