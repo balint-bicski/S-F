@@ -4,6 +4,7 @@
 #include "caffreader.h"
 #include "ciffreader.h"
 #include "debug.h"
+#include "readerlimits.h"
 
 CAFFReader::CAFFReader() : parse_called(false), parse_successful(false), data() {}
 
@@ -118,6 +119,12 @@ bool CAFFReader::read_credits(Stream& stream, u64 expected_size) {
     /* Assert that the expected size matches with the calculated size. */
     if (expected_size != (2 + 1 + 1 + 1 + 1) + 8 + creator_len || !stream) {
         debug("CAFFReader::read_credits: Expected size not equal to parsed size, or stream ended!\n");
+        return false;
+    }
+
+    /* Assert that the creator length is below the maximum allowed size. */
+    if (creator_len > Limits::creator_len) {
+        debug("CAFFReader::read_credits: Creator length was over the maximum allowed limit!\n");
         return false;
     }
 

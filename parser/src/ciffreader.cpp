@@ -2,6 +2,7 @@
 
 #include "ciffreader.h"
 #include "debug.h"
+#include "readerlimits.h"
 
 CIFFReader::CIFFReader() : parse_called(false), parse_successful(false), data() {}
 
@@ -69,6 +70,12 @@ bool CIFFReader::parse(Stream& stream, u64 expected_size) {
 bool CIFFReader::read_caption_and_tags(Stream& stream, u64 expected_size) {
     std::string caption;
     std::vector<std::string> tags;
+
+    /* Put a reasonable limit on the expected size maximum. */
+    if (expected_size > Limits::caption_and_tags_size) {
+        debug("CIFFReader::read_caption_and_tags: The expected total size exceeds the maximum limit!\n");
+        return false;
+    }
 
     /* Read caption char by char until the first '\n'. */
     char c;
@@ -148,6 +155,12 @@ bool CIFFReader::read_caption_and_tags(Stream& stream, u64 expected_size) {
 }
 
 bool CIFFReader::read_pixels(Stream& stream, u64 expected_size) {
+    /* Assert that the expected size does not exceed the maximum allowed size. */
+    if (expected_size > Limits::pixels_size) {
+        debug("CIFFReader::read_pixels: Expected image size exceeds maximum allowed image size!\n");
+        return false;
+    }
+
     /* Preallocate a large enough buffer. */
     u8* buffer = new u8[expected_size];
 
