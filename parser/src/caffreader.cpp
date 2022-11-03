@@ -160,6 +160,16 @@ bool CAFFReader::read_frame(Stream& stream, u64 expected_size) {
         return false;
     }
 
+    /* Assert that by reading the expected number of bytes, we don't go over the maximum total limit. */
+    u64 size_so_far = 0;
+    for (Frame& frame : this->data.frames) {
+        size_so_far += frame.image.width * frame.image.height;
+    }
+    if (size_so_far + expected_size > Limits::total_animation_size) {
+        debug("CAFFReader::read_frame: By reading this frame, we go over the max animation size!\n");
+        return false;
+    }
+
     /* Read eight bytes containing the frame duration. */
     u64 duration = stream.read64();
     if (!stream) {
