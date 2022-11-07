@@ -46,10 +46,10 @@ void Credits::print_metadata(std::ostream& stream, u8 prefix) const {
     stream << "{" << std::endl;
     stream << padding << "  creator: \"" << this->creator << "\"," << std::endl;
     stream << padding << "  date: \"" << this->year << "-";
-    stream << std::setw(2) << std::setfill('0') << this->month << "-";
-    stream << std::setw(2) << this->day << " ";
-    stream << std::setw(2) << this->hour << ":";
-    stream << std::setw(2) << this->minute << "\"" << std::endl;
+    stream << std::setw(2) << std::setfill('0') << (u64) this->month << "-";
+    stream << std::setw(2) << (u64) this->day << " ";
+    stream << std::setw(2) << (u64) this->hour << ":";
+    stream << std::setw(2) << (u64) this->minute << "\"" << std::endl;
     stream << padding << "}";
 }
 
