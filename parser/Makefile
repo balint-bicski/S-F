@@ -16,7 +16,7 @@ CXXFLAGS = -std=c++14 -O0 -Wall -Wdeprecated -pedantic -g
 LDFLAGS = -g
 
 # Best practice to avoid issues with similarly named files.
-.PHONY: default all clean
+.PHONY: default all clean debug
 
 # Tasks that can be called.
 default: $(BINARY)
@@ -26,6 +26,9 @@ all:
 
 clean:
 	rm -f $(BINARY) $(OBJECTS)
+
+debug: CXXFLAGS += -DDEBUG
+debug: $(BINARY)
 
 # Compilation and linking settings.
 $(BINARY): $(OBJECTS)
