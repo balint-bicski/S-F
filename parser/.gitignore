@@ -1,6 +1,6 @@
 .vscode/
-build/
-res/
 
-caff_parser
+*.o
 *.bmp
+*.caff
+caff_parser
