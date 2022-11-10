@@ -1,1 +1,16 @@
+server:
+  port: 8080
 
+spring:
+  datasource:
+    url: ${DB_URL:jdbc:h2:mem:db;DB_CLOSE_DELAY=-1}
+    driverClassName: ${DB_DRIVER:org.h2.Driver}
+    username: ${DB_USERNAME:sa}
+    password: ${DB_PASSWORD:}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false         # https://vladmihalcea.com/the-open-session-in-view-anti-pattern/
+
+security:
+  secretKey: Ind9kl8W988w9OfxqZafuzltmjGYoi6qQn49+37YAHw=
