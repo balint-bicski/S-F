@@ -1,5 +1,6 @@
 package com.doublefree.user
 
+import com.doublefree.api.model.UserDto
 import com.doublefree.util.UserUtil
 import com.doublefree.validation.ValidationErrorCode
 import com.doublefree.validation.ValidationExceptionDto
@@ -29,8 +30,8 @@ class UserService(private val userRepository: UserRepository, private val passwo
 
     fun create(userDto: UserDto): Long {
         validateUser(userDto)
-        encodeUserPassword(userDto)
-        val savedUser = userRepository.save(userDto.toEntity())
+        val userWithEncodedPassword = encodeUserPassword(userDto)
+        val savedUser = userRepository.save(userWithEncodedPassword.toEntity())
         logger.info { "User has been created {${userDto.copy(id = savedUser.id)}}" }
         return requireNotNull(savedUser.id)
     }
@@ -46,8 +47,8 @@ class UserService(private val userRepository: UserRepository, private val passwo
         }
     }
 
-    private fun encodeUserPassword(userDto: UserDto) {
-        userDto.password = passwordEncoder.encode(userDto.password)
+    private fun encodeUserPassword(userDto: UserDto): UserDto {
+        return userDto.copy(password = passwordEncoder.encode(userDto.password))
     }
 
 }

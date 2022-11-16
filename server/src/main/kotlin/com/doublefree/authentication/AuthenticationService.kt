@@ -1,5 +1,6 @@
 package com.doublefree.authentication
 
+import com.doublefree.api.model.UserCredentialsDto
 import com.doublefree.security.JwtComposer
 import mu.KotlinLogging
 import org.springframework.security.authentication.AuthenticationManager
