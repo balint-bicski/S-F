@@ -1,0 +1,53 @@
+<div class="min-vh-100" fxLayout="column" fxLayoutAlign="center center">
+  <mat-card class="p-4 mw-500px w-100">
+    <form (ngSubmit)="register()" [formGroup]="userForm">
+      <div fxLayout="column">
+        <div class="text-center my-3">
+          <h2>Registration</h2>
+        </div>
+
+        <mat-form-field>
+          <mat-label>Email</mat-label>
+          <input formControlName="email" matInput type="email">
+          <mat-error *ngIf="hasError(userForm,'email', 'required')">
+            <strong class="text-danger">Required field</strong>
+          </mat-error>
+          <mat-error *ngIf="hasError(userForm,'email', 'email')">
+            <strong class="text-danger">Not valid email</strong>
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>Password</mat-label>
+          <input formControlName="password" matInput type="password">
+          <mat-error *ngIf="hasError(userForm,'password', 'required')">
+            <strong class="text-danger">Required field</strong>
+          </mat-error>
+          <mat-error *ngIf="hasError(userForm,'password', 'minlength')">
+            <strong class="text-danger">The minimum length of the field is 6</strong>
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>Confirm password</mat-label>
+          <input formControlName="confirmPassword" matInput type="password">
+          <mat-error *ngIf="hasError(userForm,'confirmPassword', 'required')">
+            <strong class="text-danger">Required field</strong>
+          </mat-error>
+          <mat-error *ngIf="hasError(userForm,'confirmPassword', 'confirmation')">
+            <strong class="text-danger">Passwords are not identical</strong>
+          </mat-error>
+        </mat-form-field>
+
+        <mat-checkbox class="mb-3 ml-3" color="primary" formControlName="agree">
+          I agree the <a href="javascript:">terms & conditions</a>
+        </mat-checkbox>
+
+        <div fxLayout="row" fxLayoutAlign="space-between center">
+          <button [disabled]="!userForm.valid" color="primary" mat-raised-button>Register</button>
+          <a color="primary" mat-button routerLink="/">Login</a>
+        </div>
+      </div>
+    </form>
+  </mat-card>
+</div>
