@@ -22,6 +22,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserDto'
+        #401:
         422:
           description: Bad Request
           content:
@@ -31,6 +32,36 @@ paths:
       tags:
         - user
 
+  /api/users:
+    get:
+      operationId: getUsers
+      responses:
+        200:
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserDto'
+        #401:
+        #403:
+      tags:
+        - user
+
+  /api/users/{id}:
+    delete:
+      parameters:
+        - $ref: '#/components/parameters/idPathParam'
+      operationId: deleteUser
+      responses:
+        204:
+          description: Operation successful
+        #401:
+        #403:
+        #404:
+      tags:
+        - user
 
   #
   # Authentication api
@@ -81,8 +112,221 @@ paths:
       tags:
         - authentication
 
+  #
+  #  CAFF api
+  #
+  /api/caff-files:
+    post:
+      operationId: createCaffFile
+      requestBody:
+        description: CaffFileDto
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CaffFileDto'
+      responses:
+        201:
+          description: The new entity is created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdResponseDto'
+        #401:
+        #403:
+        422:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationExceptionDto'
+      tags:
+        - caff-file
+    get:
+      parameters:
+        - name: title
+          in: query
+          schema:
+            type: string
+      operationId: searchCaffFile
+      responses:
+        200:
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CaffSummaryDto'
+      tags:
+        - caff-file
+
+  /api/caff-files/{id}:
+    parameters:
+      - $ref: '#/components/parameters/idPathParam'
+    get:
+      parameters:
+        - name: token
+          in: query
+          required: true
+          schema:
+            type: string
+      operationId: getCaffFile
+      responses:
+        200:
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CaffDto'
+        #401:
+        #403:
+        #404:
+      tags:
+        - caff-file
+    delete:
+      operationId: deleteCaffFile
+      responses:
+        204:
+          description: Operation successful
+        #401:
+        #403:
+        #404:
+      tags:
+        - caff-file
+    put:
+      operationId: updateCaffFile
+      requestBody:
+        description: CaffFileDto
+        required: true
+        content:
+          application/json:
+            schema:
+              type: string
+      responses:
+        200:
+          description: Operation successful
+        #401:
+        #403:
+        #404:
+      tags:
+        - caff-file
+
+  /api/caff-files/{id}/comments:
+    parameters:
+      - $ref: '#/components/parameters/idPathParam'
+    post:
+      operationId: createComment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: string
+      responses:
+        201:
+          description: The new entity is created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdResponseDto'
+        #401:
+        #403:
+        #404:
+        422:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationExceptionDto'
+      tags:
+        - caff-file
+    get:
+      operationId: getComments
+      responses:
+        200:
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CommentDto'
+      tags:
+        - caff-file
+
+  /api/caff-files/{id}/comments/{commentId}:
+    parameters:
+      - $ref: '#/components/parameters/idPathParam'
+      - name: commentId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+    delete:
+      operationId: deleteComment
+      responses:
+        204:
+          description: Operation successful
+        #401:
+        #403:
+        #404:
+      tags:
+        - caff-file
+
+  /api/caff-files/{id}/purchase:
+    post:
+      parameters:
+        - $ref: '#/components/parameters/idPathParam'
+      operationId: purchaseCaffFile
+      responses:
+        200:
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PurchaseTokenDto'
+        #401:
+        #403:
+        #404:
+      tags:
+        - caff-file
+
+  /api/caff-files/{id}/download:
+    get:
+      parameters:
+        - $ref: '#/components/parameters/idPathParam'
+      operationId: downloadCaffFile
+      responses:
+        200:
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Binary'
+        #401:
+        #403:
+        #404:
+      tags:
+        - caff-file
+
 components:
+  parameters:
+    idPathParam:
+      name: id
+      description: Identifier path parameter
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+
   schemas:
+
+    Binary:
+      type: string
+      format: binary
 
     IdResponseDto:
       type: object
@@ -119,6 +363,78 @@ components:
       type: object
       properties:
         jwtToken:
+          type: string
+
+    CaffFileDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        title:
+          type: string
+        file:
+          $ref: '#/components/schemas/Binary'
+      required:
+        - title
+        - file
+
+    CaffSummaryDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        title:
+          type: string
+        preview:
+          $ref: '#/components/schemas/Binary'
+      required:
+        - title
+        - preview
+
+    CaffDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        uploader:
+          type: string
+        createdDate:
+          type: string
+          format: date-time
+        creator:
+          type: string
+        ciffCount:
+          type: integer
+        size:
+          type: integer
+        title:
+          type: string
+        preview:
+          $ref: '#/components/schemas/Binary'
+      required:
+        - creator
+
+    PurchaseTokenDto:
+      type: object
+      properties:
+        token:
+          type: string
+
+    CommentDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        creator:
+          type: string
+        createdDate:
+          type: string
+          format: date-time
+        content:
           type: string
 
     ValidationExceptionDto:
