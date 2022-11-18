@@ -1,0 +1,14 @@
+<header *ngIf="authService.isUserLoggedIn">
+  <mat-toolbar color="primary">
+    <mat-toolbar-row>
+      <h1 class="mx-2" fxShow="true" routerLink="/">_DoubleFree</h1>
+      <div fxLayout="row">
+        <a class="mx-2 menu-item" mat-button matTooltip="Logout" routerLink="/logout">
+          <mat-icon>exit_to_app</mat-icon>
+        </a>
+      </div>
+    </mat-toolbar-row>
+  </mat-toolbar>
+</header>
+
+<router-outlet></router-outlet>
