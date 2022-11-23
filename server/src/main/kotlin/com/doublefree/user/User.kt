@@ -20,7 +20,7 @@ class User(
 ) {
     val authorities get() = role.authorities()
 
-    fun toDto() = UserDto(id = id, email = email)
+    fun toDto() = UserDto(id = id, email = email, role = role.name)
 }
 
 fun UserDto.toEntity() = User(id, email, requireNotNull(password))

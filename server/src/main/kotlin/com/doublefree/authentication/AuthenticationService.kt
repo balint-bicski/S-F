@@ -27,7 +27,7 @@ class AuthenticationService(
         }
         val authResult = authenticationManager.authenticate(authRequest)
         logger.info { "User has logged in with email: $email" }
-        return jwtComposer.createJwtToken(email, authResult.authorities)
+        return jwtComposer.createJwtToken(email, authResult.authorities.toAuthorities())
     }
 
 }

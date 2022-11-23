@@ -1,12 +1,12 @@
 package com.doublefree.security
 
+import com.doublefree.api.model.Authority
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.io.Decoders
 import io.jsonwebtoken.security.Keys
 import lombok.RequiredArgsConstructor
 import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.security.core.GrantedAuthority
 import org.springframework.stereotype.Component
 import java.time.ZonedDateTime
 import java.util.*
@@ -20,7 +20,7 @@ class JwtComposer {
 
     private val logger = KotlinLogging.logger {}
 
-    fun createJwtToken(email: String, authorities: Collection<GrantedAuthority>): String {
+    fun createJwtToken(email: String, authorities: Collection<Authority>): String {
         return try {
             val key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey))
 
@@ -36,8 +36,8 @@ class JwtComposer {
         }
     }
 
-    private fun extractAuthoritiesToStrings(authorities: Collection<GrantedAuthority>): Set<String> {
-        return authorities.map { obj -> obj.authority }.toSet()
+    private fun extractAuthoritiesToStrings(authorities: Collection<Authority>): Set<String> {
+        return authorities.map { obj -> obj.name }.toSet()
     }
 
 }

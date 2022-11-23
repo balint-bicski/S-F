@@ -6,12 +6,21 @@ import {AuthGuard} from './guards/auth.guard';
 import {LogoutComponent} from './components/logout/logout.component';
 import {FrameComponent} from "./components/frame/frame.component";
 import {DashboardComponent} from "./components/dashboard/dashboard.component";
+import {UserListComponent} from "./components/user-list/user-list.component";
+import {RoutingData} from "./routing-data";
+import {Authority} from "../../target/generated-sources";
 
 const routes: Routes = [
   {
     path: '', component: FrameComponent, children: [
       {path: '', pathMatch: 'full', redirectTo: 'dashboard'},
       {path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard]},
+      {
+        path: 'users',
+        component: UserListComponent,
+        canActivate: [AuthGuard],
+        data: <RoutingData>{authority: Authority.ViewUser},
+      },
       {path: 'login', component: LoginComponent},
       {path: 'logout', component: LogoutComponent},
       {path: 'register', component: RegistrationComponent},

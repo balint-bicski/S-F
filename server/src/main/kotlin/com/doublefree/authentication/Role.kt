@@ -1,5 +1,6 @@
 package com.doublefree.authentication
 
+import com.doublefree.api.model.Authority
 import org.springframework.security.core.GrantedAuthority
 
 enum class Role(private vararg val authorities: Authority) {
@@ -17,10 +18,6 @@ enum class Role(private vararg val authorities: Authority) {
 
 }
 
-enum class Authority : GrantedAuthority {
+fun Collection<GrantedAuthority>.toAuthorities() = map { Authority.valueOf(it.authority) }
 
-    VIEW_CAFF, DOWNLOAD_CAFF, UPLOAD_CAFF, DELETE_CAFF, MODIFY_CAFF, PAYMENT, SEARCH_CAFF, WRITE_NOTE, DELETE_NOTE, DELETE_USER;
-
-    override fun getAuthority() = name
-
-}
+fun Collection<Authority>.toGrantedAuthorities() = map { GrantedAuthority { it.name } }
