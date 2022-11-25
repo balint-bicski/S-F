@@ -19,30 +19,39 @@ class UserService(private val userRepository: UserRepository, private val passwo
 
     fun currentUser(): UserDto {
         val emailOfLoggedInUser = UserUtil.emailOfLoggedInUser()
-        return getOne(emailOfLoggedInUser)
-            .orElseThrow { NoSuchElementException("No user found with email: $emailOfLoggedInUser") }
+        return findByEmail(emailOfLoggedInUser).orElseThrow { NoSuchElementException("No user found with email: $emailOfLoggedInUser") }
             .toDto()
     }
 
-    fun getOne(id: Long) = userRepository.findById(id)
-        .orElseThrow { NoSuchElementException("No user found with id: $id") }
-        .toDto()
-
     fun create(userDto: UserDto): Long {
-        validateUser(userDto)
+        validateUserExistByEmail(userDto.email)
         val userWithEncodedPassword = encodeUserPassword(userDto)
         val savedUser = userRepository.save(userWithEncodedPassword.toEntity())
         logger.info { "User has been created {${userDto.copy(id = savedUser.id)}}" }
         return requireNotNull(savedUser.id)
     }
 
-    private fun getOne(email: String) = userRepository.findByEmail(email)
+    fun getUsers(): List<UserDto> = userRepository.findAll().map { it.toDto() }
 
-    private fun validateUser(userDto: UserDto) {
-        if (getOne(userDto.email).isPresent) {
+    fun delete(id: Long) {
+        validateUserNotExistById(id)
+        userRepository.deleteById(id)
+    }
+
+    private fun findByEmail(email: String) = userRepository.findByEmail(email)
+
+    private fun validateUserExistByEmail(email: String) {
+        if (findByEmail(email).isPresent) {
             throw ValidationExceptionDto.ofError(
-                ValidationErrorCode.USER_EXIST_WITH_EMAIL,
-                mapOf("email" to userDto.email)
+                ValidationErrorCode.USER_EXIST_WITH_EMAIL, mapOf("email" to email)
+            )
+        }
+    }
+
+    private fun validateUserNotExistById(userId: Long) {
+        if (!userRepository.existsById(userId)) {
+            throw ValidationExceptionDto.ofError(
+                ValidationErrorCode.USER_DOES_NOT_EXIST, mapOf("id" to userId.toString())
             )
         }
     }

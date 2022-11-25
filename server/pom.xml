@@ -118,6 +118,7 @@
                                 <interfaceOnly>true</interfaceOnly>
                                 <library>spring-boot</library>
                                 <useTags>true</useTags>
+                                <enumPropertyNaming>original</enumPropertyNaming>
                             </configOptions>
                         </configuration>
                     </execution>

@@ -4,7 +4,7 @@ import {Observable} from 'rxjs';
 import {switchMap, tap} from 'rxjs/operators';
 import {getItemFromStorage, removeItemFromStorage, setItemInStorage} from '../util/session-storage.util';
 import {CURRENT_USER, TOKEN} from '../util/session-storage-constant';
-import {AuthenticationService, UserDto, UserService} from "../../../target/generated-sources";
+import {AuthenticationService, Authority, UserDto, UserService} from "../../../target/generated-sources";
 import {fromBase64} from "../util/encoding.util";
 
 export class JwtToken {
@@ -48,8 +48,8 @@ export class AuthService {
     return JSON.parse(fromBase64(token.split('.')[1]));
   }
 
-  hasAuthority(authority: string): boolean {
-    return this.getToken().authorities.includes(authority);
+  hasAuthority(authority?: Authority): boolean {
+    return !authority || this.getToken().authorities.includes(authority);
   }
 
   authorities(): string {

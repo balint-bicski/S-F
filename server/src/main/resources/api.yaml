@@ -345,6 +345,8 @@ components:
           type: string
         password:
           type: string
+        role:
+          type: string
       required:
         - email
 
@@ -452,3 +454,18 @@ components:
           type: object
           additionalProperties:
             type: string
+
+    Authority:
+      type: string
+      enum:
+        - VIEW_CAFF
+        - DOWNLOAD_CAFF
+        - UPLOAD_CAFF
+        - DELETE_CAFF
+        - MODIFY_CAFF
+        - PAYMENT
+        - SEARCH_CAFF
+        - WRITE_NOTE
+        - DELETE_NOTE
+        - VIEW_USER
+        - DELETE_USER

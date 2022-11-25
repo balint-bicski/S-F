@@ -16,5 +16,5 @@ data class ValidationErrorDto(
 }
 
 enum class ValidationErrorCode {
-    USER_EXIST_WITH_EMAIL
+    USER_EXIST_WITH_EMAIL, USER_DOES_NOT_EXIST
 }

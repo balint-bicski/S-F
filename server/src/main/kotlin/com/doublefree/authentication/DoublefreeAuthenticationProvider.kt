@@ -12,8 +12,7 @@ import javax.transaction.Transactional
 @Service
 @Transactional
 class PtmaAuthenticationProvider(
-    private val userRepository: UserRepository,
-    private val passwordEncoder: PasswordEncoder
+    private val userRepository: UserRepository, private val passwordEncoder: PasswordEncoder
 ) : AuthenticationProvider {
 
     override fun authenticate(authentication: Authentication): Authentication {
@@ -25,7 +24,7 @@ class PtmaAuthenticationProvider(
         if (!passwordEncoder.matches(password, user.get().password)) {
             throw BadCredentialsException("Invalid username or password!")
         }
-        return UsernamePasswordAuthenticationToken(email, password, user.get().authorities)
+        return UsernamePasswordAuthenticationToken(email, password, user.get().authorities.toGrantedAuthorities())
     }
 
     override fun supports(authentication: Class<*>): Boolean {

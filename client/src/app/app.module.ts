@@ -22,6 +22,8 @@ import {NoopAnimationsModule} from "@angular/platform-browser/animations";
 import {MatToolbarModule} from "@angular/material/toolbar";
 import {MatTooltipModule} from "@angular/material/tooltip";
 import {MatIconModule} from "@angular/material/icon";
+import { UserListComponent } from './components/user-list/user-list.component';
+import {MatTableModule} from "@angular/material/table";
 
 @NgModule({
   declarations: [
@@ -30,7 +32,8 @@ import {MatIconModule} from "@angular/material/icon";
     RegistrationComponent,
     LogoutComponent,
     FrameComponent,
-    DashboardComponent
+    DashboardComponent,
+    UserListComponent
   ],
   imports: [
     BrowserModule,
@@ -48,6 +51,7 @@ import {MatIconModule} from "@angular/material/icon";
     FlexLayoutModule,
     MatTooltipModule,
     MatIconModule,
+    MatTableModule,
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: JwtTokenHttpInterceptor, multi: true},
