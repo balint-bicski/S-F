@@ -24,6 +24,9 @@ import {MatTooltipModule} from "@angular/material/tooltip";
 import {MatIconModule} from "@angular/material/icon";
 import { UserListComponent } from './components/user-list/user-list.component';
 import {MatTableModule} from "@angular/material/table";
+import {DetailsViewComponent} from "./components/details-view/details-view.component";
+import {ApiModule} from "../../target/generated-sources";
+import {CommentsComponent} from "./components/comments/comments.component";
 
 @NgModule({
   declarations: [
@@ -33,6 +36,8 @@ import {MatTableModule} from "@angular/material/table";
     LogoutComponent,
     FrameComponent,
     DashboardComponent,
+    DetailsViewComponent,
+    CommentsComponent,
     UserListComponent
   ],
   imports: [
@@ -52,6 +57,7 @@ import {MatTableModule} from "@angular/material/table";
     MatTooltipModule,
     MatIconModule,
     MatTableModule,
+    ApiModule
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: JwtTokenHttpInterceptor, multi: true},
