@@ -1,4 +1,5 @@
 import {Component, OnInit} from '@angular/core';
+import { Location } from '@angular/common';
 import {ActivatedRoute} from "@angular/router";
 import {CaffDto, CaffFileService} from "../../../../target/generated-sources";
 import {DomSanitizer, SafeUrl} from "@angular/platform-browser";
@@ -18,6 +19,7 @@ export class DetailsViewComponent implements OnInit {
   detailsData: Array<Object> = [];
 
   constructor(
+    private location: Location,
     private route: ActivatedRoute,
     private sanitizer: DomSanitizer,
     private caffService: CaffFileService
@@ -39,6 +41,10 @@ export class DetailsViewComponent implements OnInit {
   ngOnInit() {
     this.loadCaffDetails();
     this.loadDetailsTableContent(this.caff);
+  }
+
+  onBackButtonClicked() {
+    this.location.back();
   }
 
   // Retrieves the CAFF to display from the server.

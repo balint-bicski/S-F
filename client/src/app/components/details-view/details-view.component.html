@@ -2,8 +2,15 @@
   <!-- CAFF details -->
   <mat-card>
     <!-- Card title -->
-    <mat-card-header>
-      <mat-card-title>{{caff.title}}</mat-card-title>
+    <mat-card-header class="d-flex align-items-center justify-content-between">
+
+      <mat-card-title>
+        {{caff.title}}
+      </mat-card-title>
+
+      <button mat-raised-button (click)="onBackButtonClicked()">
+        Back
+      </button>
     </mat-card-header>
 
     <!-- Card body -->

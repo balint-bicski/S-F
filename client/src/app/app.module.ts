@@ -14,7 +14,7 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatCardModule} from '@angular/material/card';
 import {LogoutComponent} from './components/logout/logout.component';
 import {MatCheckboxModule} from "@angular/material/checkbox";
-import {ReactiveFormsModule} from "@angular/forms";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {FrameComponent} from './components/frame/frame.component';
 import {DashboardComponent} from './components/dashboard/dashboard.component';
 import {MatSnackBarModule} from "@angular/material/snack-bar";
@@ -57,7 +57,8 @@ import {CommentsComponent} from "./components/comments/comments.component";
     MatTooltipModule,
     MatIconModule,
     MatTableModule,
-    ApiModule
+    ApiModule,
+    FormsModule
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: JwtTokenHttpInterceptor, multi: true},

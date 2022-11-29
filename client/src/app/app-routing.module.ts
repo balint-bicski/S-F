@@ -15,7 +15,7 @@ const routes: Routes = [
   {
     path: '', component: FrameComponent, children: [
       {path: '', pathMatch: 'full', redirectTo: 'dashboard'},
-      {path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard]},
+      {path: 'dashboard', component: DashboardComponent},//, canActivate: [AuthGuard]},
       {path: 'details/:caffId', component: DetailsViewComponent},
       {
         path: 'users',
