@@ -3,8 +3,7 @@ import {CaffFileService, CommentDto} from "../../../../target/generated-sources"
 
 @Component({
   selector: 'app-comments',
-  templateUrl: './comments.component.html',
-  styleUrls: ['./comments.component.scss']
+  templateUrl: './comments.component.html'
 })
 export class CommentsComponent implements OnInit {
   // The CAFF to retrieve the comments for, input attribute.

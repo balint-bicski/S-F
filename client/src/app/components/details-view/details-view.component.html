@@ -2,15 +2,8 @@
   <!-- CAFF details -->
   <mat-card>
     <!-- Card title -->
-    <mat-card-header class="d-flex align-items-center justify-content-between">
-
-      <mat-card-title>
-        {{caff.title}}
-      </mat-card-title>
-
-      <button mat-raised-button (click)="onBackButtonClicked()">
-        Back
-      </button>
+    <mat-card-header>
+      <mat-card-title>{{caff.title}}</mat-card-title>
     </mat-card-header>
 
     <!-- Card body -->
@@ -36,6 +29,19 @@
             <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
             <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
           </table>
+
+          <div class="row mt-3">
+            <div class="col-6">
+              <button mat-raised-button class="w-100" (click)="onBackButtonClicked()">
+                Back
+              </button>
+            </div>
+            <div class="col-6">
+              <button mat-raised-button color="primary" class="w-100" (click)="onPurchaseButtonClicked()">
+                Purchase
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </mat-card-content>

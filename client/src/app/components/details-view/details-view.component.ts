@@ -1,13 +1,11 @@
 import {Component, OnInit} from '@angular/core';
-import { Location } from '@angular/common';
-import {ActivatedRoute} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 import {CaffDto, CaffFileService} from "../../../../target/generated-sources";
 import {DomSanitizer, SafeUrl} from "@angular/platform-browser";
 
 @Component({
   selector: 'app-details-view',
-  templateUrl: './details-view.component.html',
-  styleUrls: ['./details-view.component.scss']
+  templateUrl: './details-view.component.html'
 })
 export class DetailsViewComponent implements OnInit {
   // CAFF data and preview image.
@@ -19,7 +17,7 @@ export class DetailsViewComponent implements OnInit {
   detailsData: Array<Object> = [];
 
   constructor(
-    private location: Location,
+    private router: Router,
     private route: ActivatedRoute,
     private sanitizer: DomSanitizer,
     private caffService: CaffFileService
@@ -44,7 +42,11 @@ export class DetailsViewComponent implements OnInit {
   }
 
   onBackButtonClicked() {
-    this.location.back();
+    this.router.navigate(['/']);
+  }
+
+  onPurchaseButtonClicked() {
+    this.router.navigate(['/details/' + this.caff.id + '/purchase']);
   }
 
   // Retrieves the CAFF to display from the server.

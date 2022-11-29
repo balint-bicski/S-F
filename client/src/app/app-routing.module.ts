@@ -10,6 +10,7 @@ import {DetailsViewComponent} from "./components/details-view/details-view.compo
 import {UserListComponent} from "./components/user-list/user-list.component";
 import {RoutingData} from "./routing-data";
 import {Authority} from "../../target/generated-sources";
+import {PaymentComponent} from "./components/payment/payment.component";
 
 const routes: Routes = [
   {
@@ -17,6 +18,7 @@ const routes: Routes = [
       {path: '', pathMatch: 'full', redirectTo: 'dashboard'},
       {path: 'dashboard', component: DashboardComponent},//, canActivate: [AuthGuard]},
       {path: 'details/:caffId', component: DetailsViewComponent},
+      {path: 'details/:caffId/purchase', component: PaymentComponent},
       {
         path: 'users',
         component: UserListComponent,

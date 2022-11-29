@@ -27,6 +27,7 @@ import {MatTableModule} from "@angular/material/table";
 import {DetailsViewComponent} from "./components/details-view/details-view.component";
 import {ApiModule} from "../../target/generated-sources";
 import {CommentsComponent} from "./components/comments/comments.component";
+import {PaymentComponent} from "./components/payment/payment.component";
 
 @NgModule({
   declarations: [
@@ -37,6 +38,7 @@ import {CommentsComponent} from "./components/comments/comments.component";
     FrameComponent,
     DashboardComponent,
     DetailsViewComponent,
+    PaymentComponent,
     CommentsComponent,
     UserListComponent
   ],

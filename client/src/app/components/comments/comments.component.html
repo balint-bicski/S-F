@@ -3,15 +3,19 @@
 
   <!-- New comment form -->
   <mat-card class="mb-3">
-    <form onsubmit="return false;">
-      <mat-form-field class="col-12">
-        <mat-label>Leave a comment</mat-label>
-        <textarea matInput #newCommentTextArea rows="3"></textarea>
-      </mat-form-field>
-      <button mat-raised-button (click)="sendComment(newCommentTextArea.value)">
-        Submit
-      </button>
-    </form>
+      <div class="row align-items-center">
+        <div class="col-12 col-md-10">
+          <mat-form-field class="w-100 m-0">
+            <mat-label>Leave a comment</mat-label>
+            <textarea matInput #newCommentTextArea rows="3"></textarea>
+          </mat-form-field>
+        </div>
+        <div class="col-12 col-md-2">
+          <button mat-raised-button color="primary" class="w-100" (click)="sendComment(newCommentTextArea.value)">
+            Submit
+          </button>
+        </div>
+      </div>
   </mat-card>
 
   <!-- List of previous comments -->
