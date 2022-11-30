@@ -3,6 +3,8 @@ import {AuthService} from "../../services/auth.service";
 import {CaffFileService} from "../../../../target/generated-sources";
 import {DomSanitizer, SafeUrl} from "@angular/platform-browser";
 import {Router} from "@angular/router";
+import {MatDialog} from "@angular/material/dialog";
+import {UploadDialogComponent} from "./upload-dialog.component";
 
 class CaffSummary {
   id: number;
@@ -22,6 +24,7 @@ export class DashboardComponent implements OnInit {
   filterText: string;
 
   constructor(
+    private uploadDialog: MatDialog,
     private router: Router,
     private authService: AuthService,
     private sanitizer: DomSanitizer,
@@ -58,5 +61,9 @@ export class DashboardComponent implements OnInit {
   // Refills the filtered list when the filter text changes.
   onFilterChanged() {
     this.filteredCaffs = this.caffs.filter(caff => caff.title.toLowerCase().includes(this.filterText.toLowerCase()));
+  }
+
+  onUploadButtonClicked() {
+    this.uploadDialog.open(UploadDialogComponent);
   }
 }

@@ -28,6 +28,8 @@ import {DetailsViewComponent} from "./components/details-view/details-view.compo
 import {ApiModule} from "../../target/generated-sources";
 import {CommentsComponent} from "./components/comments/comments.component";
 import {PaymentComponent} from "./components/payment/payment.component";
+import {UploadDialogComponent} from "./components/dashboard/upload-dialog.component";
+import {MatDialogModule} from "@angular/material/dialog";
 
 @NgModule({
   declarations: [
@@ -37,6 +39,7 @@ import {PaymentComponent} from "./components/payment/payment.component";
     LogoutComponent,
     FrameComponent,
     DashboardComponent,
+    UploadDialogComponent,
     DetailsViewComponent,
     PaymentComponent,
     CommentsComponent,
@@ -60,7 +63,8 @@ import {PaymentComponent} from "./components/payment/payment.component";
     MatIconModule,
     MatTableModule,
     ApiModule,
-    FormsModule
+    FormsModule,
+    MatDialogModule
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: JwtTokenHttpInterceptor, multi: true},

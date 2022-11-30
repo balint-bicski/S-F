@@ -1,0 +1,17 @@
+<h1 mat-dialog-title>Upload new CAFF file</h1>
+
+<!-- Title input -->
+<mat-form-field style="width: 100%;">
+  <input matInput type="text" placeholder="Enter CAFF title" #titleInput>
+</mat-form-field>
+
+<!-- File input -->
+<input type="file" style="display: none;" #fileUpload (click)="onFileSelected($event)">
+<button mat-raised-button (click)="fileUpload.click()" class="w-100">{{file?.name || "Select file"}}</button>
+
+<!-- Action buttons -->
+<div mat-dialog-actions>
+  <button mat-raised-button mat-dialog-close="false">Cancel</button>
+  <button mat-raised-button color="primary" mat-dialog-close="true" class="ms-auto"
+          (click)="uploadFile(titleInput.value)">Upload</button>
+</div>
