@@ -6,15 +6,19 @@ import {AuthGuard} from './guards/auth.guard';
 import {LogoutComponent} from './components/logout/logout.component';
 import {FrameComponent} from "./components/frame/frame.component";
 import {DashboardComponent} from "./components/dashboard/dashboard.component";
+import {DetailsViewComponent} from "./components/details-view/details-view.component";
 import {UserListComponent} from "./components/user-list/user-list.component";
 import {RoutingData} from "./routing-data";
 import {Authority} from "../../target/generated-sources";
+import {PaymentComponent} from "./components/payment/payment.component";
 
 const routes: Routes = [
   {
     path: '', component: FrameComponent, children: [
       {path: '', pathMatch: 'full', redirectTo: 'dashboard'},
-      {path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard]},
+      {path: 'dashboard', component: DashboardComponent},//, canActivate: [AuthGuard]},
+      {path: 'details/:caffId', component: DetailsViewComponent},
+      {path: 'details/:caffId/purchase', component: PaymentComponent},
       {
         path: 'users',
         component: UserListComponent,

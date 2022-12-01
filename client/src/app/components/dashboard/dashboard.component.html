@@ -1,1 +1,28 @@
-<span>{{text}}</span>
+<div class="h-100 container mt-2">
+  <!-- Search bar and upload button -->
+  <div class="row my-2">
+    <div class="col-9 col-md-11">
+      <mat-card>
+        <mat-form-field style="width: 100%;">
+          <input matInput type="text" [(ngModel)]="filterText" (ngModelChange)="onFilterChanged()"
+                 placeholder="Type here to filter by title..." style="width: 100%;">
+        </mat-form-field>
+      </mat-card>
+    </div>
+
+    <div class="col-3 col-md-1 my-auto">
+      <button mat-raised-button color="primary" class="w-100" (click)="onUploadButtonClicked()">Upload</button>
+    </div>
+  </div>
+
+  <!-- CAFF list -->
+  <div class="row mt-2">
+    <div class="col-12 col-md-4 my-2" *ngFor="let caff of filteredCaffs">
+      <mat-card (click)="onListElementClicked(caff.id)">
+        <mat-card-title>{{caff.title}}</mat-card-title>
+        <img mat-card-image class="mt-2 px-3" alt="CAFF preview image"
+             src="{{caff.previewImage}}">
+      </mat-card>
+    </div>
+  </div>
+</div>

@@ -14,7 +14,7 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatCardModule} from '@angular/material/card';
 import {LogoutComponent} from './components/logout/logout.component';
 import {MatCheckboxModule} from "@angular/material/checkbox";
-import {ReactiveFormsModule} from "@angular/forms";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {FrameComponent} from './components/frame/frame.component';
 import {DashboardComponent} from './components/dashboard/dashboard.component';
 import {MatSnackBarModule} from "@angular/material/snack-bar";
@@ -24,6 +24,12 @@ import {MatTooltipModule} from "@angular/material/tooltip";
 import {MatIconModule} from "@angular/material/icon";
 import { UserListComponent } from './components/user-list/user-list.component';
 import {MatTableModule} from "@angular/material/table";
+import {DetailsViewComponent} from "./components/details-view/details-view.component";
+import {ApiModule} from "../../target/generated-sources";
+import {CommentsComponent} from "./components/comments/comments.component";
+import {PaymentComponent} from "./components/payment/payment.component";
+import {UploadDialogComponent} from "./components/dashboard/upload-dialog.component";
+import {MatDialogModule} from "@angular/material/dialog";
 
 @NgModule({
   declarations: [
@@ -33,6 +39,10 @@ import {MatTableModule} from "@angular/material/table";
     LogoutComponent,
     FrameComponent,
     DashboardComponent,
+    UploadDialogComponent,
+    DetailsViewComponent,
+    PaymentComponent,
+    CommentsComponent,
     UserListComponent
   ],
   imports: [
@@ -52,6 +62,9 @@ import {MatTableModule} from "@angular/material/table";
     MatTooltipModule,
     MatIconModule,
     MatTableModule,
+    ApiModule,
+    FormsModule,
+    MatDialogModule
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: JwtTokenHttpInterceptor, multi: true},
