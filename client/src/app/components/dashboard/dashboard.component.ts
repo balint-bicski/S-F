@@ -1,16 +1,12 @@
 import {Component, OnInit} from '@angular/core';
 import {AuthService} from "../../services/auth.service";
-import {CaffFileService} from "../../../../target/generated-sources";
+import {CaffFileService, CaffSummaryDto} from "../../../../target/generated-sources";
 import {DomSanitizer, SafeUrl} from "@angular/platform-browser";
 import {Router} from "@angular/router";
 import {MatDialog} from "@angular/material/dialog";
 import {UploadDialogComponent} from "./upload-dialog.component";
 
-class CaffSummary {
-  id: number;
-  title: string;
-  preview: SafeUrl;
-}
+type SummaryWithPreview = CaffSummaryDto & { previewImage: SafeUrl };
 
 @Component({
   selector: 'app-dashboard',
@@ -18,38 +14,34 @@ class CaffSummary {
 })
 export class DashboardComponent implements OnInit {
   // Contains the full list of the caff summaries.
-  caffs: Array<CaffSummary>;
+  caffs: Array<SummaryWithPreview>;
   // Contains a filtered array based on the filter text.
-  filteredCaffs: Array<CaffSummary>;
+  filteredCaffs: Array<SummaryWithPreview>;
   filterText: string;
 
   constructor(
+    private sanitizer: DomSanitizer,
     private uploadDialog: MatDialog,
     private router: Router,
     private authService: AuthService,
-    private sanitizer: DomSanitizer,
     private caffService: CaffFileService
   ) {
     // TODO Temporary until backend is working
     this.caffs = [
-      {id: 0, title: "You are", preview: "https://picsum.photos/300/200"},
-      {id: 1, title: "My fire", preview: "https://picsum.photos/300/200"},
-      {id: 2, title: "The one", preview: "https://picsum.photos/300/200"},
-      {id: 3, title: "Desire", preview: "https://picsum.photos/300/200"},
-      {id: 4, title: "Believe when I say", preview: "https://picsum.photos/300/200"},
-      {id: 5, title: "I want it that way", preview: "https://picsum.photos/300/200"},
+      {id: 0, title: "You are", preview: new Blob(), previewImage: "https://picsum.photos/300/200"},
+      {id: 1, title: "My fire", preview: new Blob(), previewImage: "https://picsum.photos/300/200"},
+      {id: 2, title: "The one", preview: new Blob(), previewImage: "https://picsum.photos/300/200"},
+      {id: 3, title: "Desire", preview: new Blob(), previewImage: "https://picsum.photos/300/200"},
+      {id: 4, title: "Believe when I say", preview: new Blob(), previewImage: "https://picsum.photos/300/200"},
+      {id: 5, title: "I want it that way", preview: new Blob(), previewImage: "https://picsum.photos/300/200"},
     ];
   }
 
   ngOnInit() {
-    this.caffService.searchCaffFile("").subscribe(caffs => {
-      this.caffs = caffs.map(caff => ({
-        id: caff.id,
-        title: caff.title,
-        preview: this.sanitizer.bypassSecurityTrustUrl(URL.createObjectURL(caff.preview))
-      }));
-    });
-
+    this.caffService.searchCaffFile("").subscribe(caffs => this.caffs = caffs.map(caff => ({
+      id: caff.id, title: caff.title, preview: caff.preview,
+      previewImage: this.sanitizer.bypassSecurityTrustUrl(URL.createObjectURL(caff.preview))
+    })));
     this.filteredCaffs = this.caffs;
   }
 

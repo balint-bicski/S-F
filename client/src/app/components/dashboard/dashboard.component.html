@@ -20,7 +20,8 @@
     <div class="col-12 col-md-4 my-2" *ngFor="let caff of filteredCaffs">
       <mat-card (click)="onListElementClicked(caff.id)">
         <mat-card-title>{{caff.title}}</mat-card-title>
-        <img mat-card-image class="mt-2 px-3" src="{{caff.preview}}" alt="CAFF preview image">
+        <img mat-card-image class="mt-2 px-3" alt="CAFF preview image"
+             src="{{caff.previewImage}}">
       </mat-card>
     </div>
   </div>
