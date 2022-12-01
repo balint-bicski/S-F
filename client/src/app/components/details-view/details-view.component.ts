@@ -55,7 +55,7 @@ export class DetailsViewComponent implements OnInit {
   private loadCaffDetails(): void {
     const caffId = Number(this.route.snapshot.paramMap.get('caffId'));
 
-    this.caffService.getCaffFile(caffId, getItemFromStorage(TOKEN)).subscribe(caff => {
+    this.caffService.getCaffFile(caffId, getItemFromStorage(TOKEN) || "").subscribe(caff => {
       this.caff = caff;
       this.caffPreview = this.sanitizer.bypassSecurityTrustUrl(URL.createObjectURL(caff.preview));
     });
