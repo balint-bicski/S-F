@@ -39,8 +39,7 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit() {
     this.caffService.searchCaffFile("").subscribe(caffs => this.caffs = caffs.map(caff => ({
-      id: caff.id, title: caff.title, preview: caff.preview,
-      previewImage: this.sanitizer.bypassSecurityTrustUrl(URL.createObjectURL(caff.preview))
+      ...caff, previewImage: this.sanitizer.bypassSecurityTrustUrl(URL.createObjectURL(caff.preview))
     })));
     this.filteredCaffs = this.caffs;
   }

@@ -13,5 +13,6 @@
 <div mat-dialog-actions>
   <button mat-raised-button mat-dialog-close="false">Cancel</button>
   <button mat-raised-button color="primary" mat-dialog-close="true" class="ms-auto"
+          [disabled]="titleInput.value.length === 0 || !file"
           (click)="uploadFile(titleInput.value)">Upload</button>
 </div>

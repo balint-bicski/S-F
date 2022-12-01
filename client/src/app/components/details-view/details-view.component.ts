@@ -2,6 +2,8 @@ import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
 import {CaffDto, CaffFileService} from "../../../../target/generated-sources";
 import {DomSanitizer, SafeUrl} from "@angular/platform-browser";
+import {getItemFromStorage} from "../../util/session-storage.util";
+import {TOKEN} from "../../util/session-storage-constant";
 
 @Component({
   selector: 'app-details-view',
@@ -53,8 +55,7 @@ export class DetailsViewComponent implements OnInit {
   private loadCaffDetails(): void {
     const caffId = Number(this.route.snapshot.paramMap.get('caffId'));
 
-    // TODO Need to get authorization token here
-    this.caffService.getCaffFile(caffId, "TODO").subscribe(caff => {
+    this.caffService.getCaffFile(caffId, getItemFromStorage(TOKEN)).subscribe(caff => {
       this.caff = caff;
       this.caffPreview = this.sanitizer.bypassSecurityTrustUrl(URL.createObjectURL(caff.preview));
     });

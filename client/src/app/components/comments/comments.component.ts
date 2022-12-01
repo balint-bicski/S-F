@@ -1,5 +1,6 @@
 import {Component, Input, OnInit} from "@angular/core";
 import {CaffFileService, CommentDto} from "../../../../target/generated-sources";
+import {SnackBarService} from "../../services/snack-bar.service";
 
 @Component({
   selector: 'app-comments',
@@ -12,6 +13,7 @@ export class CommentsComponent implements OnInit {
   comments: Array<CommentDto>;
 
   constructor(
+    private snackBar: SnackBarService,
     private caffService: CaffFileService
   ) {
     // TODO Temporary until backend is working
@@ -22,14 +24,24 @@ export class CommentsComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.loadComments();
+  }
+
+  loadComments() {
     this.caffService.getComments(this.caffId).subscribe(comments => this.comments = comments);
   }
 
   sendComment(text: string) {
-    this.caffService.createComment(this.caffId, text).subscribe(/* TODO Handle received new comment */);
+    this.caffService.createComment(this.caffId, text).subscribe({
+      next: () => this.loadComments(),
+      error: () => this.snackBar.error("Comment could not be added!")
+    });
   }
 
   deleteComment(commentId: number) {
-    this.caffService.deleteComment(this.caffId, commentId).subscribe(/* TODO Remove comment by id */);
+    this.caffService.deleteComment(this.caffId, commentId).subscribe({
+      next: () => this.loadComments(),
+      error: () => this.snackBar.error("Comment could not be removed!")
+    });
   }
 }
