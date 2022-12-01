@@ -28,7 +28,10 @@ export class CommentsComponent implements OnInit {
   }
 
   loadComments() {
-    this.caffService.getComments(this.caffId).subscribe(comments => this.comments = comments);
+    this.caffService.getComments(this.caffId).subscribe({
+      next: comments => this.comments = comments,
+      error: () => this.snackBar.error("Could not load comments! The server probably can't be reached!")
+    });
   }
 
   sendComment(text: string) {
