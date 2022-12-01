@@ -1,6 +1,7 @@
 import {Component, OnInit} from "@angular/core";
 import {ActivatedRoute, Router} from "@angular/router";
 import {CaffFileService} from "../../../../target/generated-sources";
+import {SnackBarService} from "../../services/snack-bar.service";
 
 @Component({
   selector: 'app-payment',
@@ -10,6 +11,7 @@ export class PaymentComponent implements OnInit {
   caffId: number | undefined;
 
   constructor(
+    private snackBar: SnackBarService,
     private router: Router,
     private route: ActivatedRoute,
     private caffService: CaffFileService
@@ -20,11 +22,14 @@ export class PaymentComponent implements OnInit {
   }
 
   onButtonClicked() {
-    this.caffService.downloadCaffFile(this.caffId).subscribe(blob => {
-      var url = URL.createObjectURL(blob);
-      window.open(url);
+    this.caffService.downloadCaffFile(this.caffId).subscribe({
+      next: blob => {
+        var url = URL.createObjectURL(blob);
+        window.open(url);
 
-      this.router.navigate(['/details/' + this.caffId]);
+        this.router.navigate(['/details/' + this.caffId]);
+      },
+      error: () => this.snackBar.error("Could not verify payment with server!")
     });
   }
 }

@@ -6,7 +6,7 @@
 </mat-form-field>
 
 <!-- File input -->
-<input type="file" style="display: none;" #fileUpload (click)="onFileSelected($event)">
+<input type="file" style="display: none;" #fileUpload (change)="onFileSelected($event)">
 <button mat-raised-button (click)="fileUpload.click()" class="w-100">{{file?.name || "Select file"}}</button>
 
 <!-- Action buttons -->

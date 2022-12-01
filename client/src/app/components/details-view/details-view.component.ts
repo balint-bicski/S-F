@@ -4,6 +4,7 @@ import {CaffDto, CaffFileService} from "../../../../target/generated-sources";
 import {DomSanitizer, SafeUrl} from "@angular/platform-browser";
 import {getItemFromStorage} from "../../util/session-storage.util";
 import {TOKEN} from "../../util/session-storage-constant";
+import {SnackBarService} from "../../services/snack-bar.service";
 
 @Component({
   selector: 'app-details-view',
@@ -19,6 +20,7 @@ export class DetailsViewComponent implements OnInit {
   detailsData: Array<Object> = [];
 
   constructor(
+    private snackBar: SnackBarService,
     private router: Router,
     private route: ActivatedRoute,
     private sanitizer: DomSanitizer,
@@ -55,9 +57,12 @@ export class DetailsViewComponent implements OnInit {
   private loadCaffDetails(): void {
     const caffId = Number(this.route.snapshot.paramMap.get('caffId'));
 
-    this.caffService.getCaffFile(caffId, getItemFromStorage(TOKEN)).subscribe(caff => {
-      this.caff = caff;
-      this.caffPreview = this.sanitizer.bypassSecurityTrustUrl(URL.createObjectURL(caff.preview));
+    this.caffService.getCaffFile(caffId, getItemFromStorage(TOKEN) || "").subscribe({
+      next: caff => {
+        this.caff = caff;
+        this.caffPreview = this.sanitizer.bypassSecurityTrustUrl(URL.createObjectURL(caff.preview));
+      },
+      error: () => this.snackBar.error("Could not load selected CAFF! Either the server can't be reached, or no such CAFF exists!")
     });
   }
 

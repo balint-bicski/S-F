@@ -5,6 +5,7 @@ import {DomSanitizer, SafeUrl} from "@angular/platform-browser";
 import {Router} from "@angular/router";
 import {MatDialog} from "@angular/material/dialog";
 import {UploadDialogComponent} from "./upload-dialog.component";
+import {SnackBarService} from "../../services/snack-bar.service";
 
 type SummaryWithPreview = CaffSummaryDto & { previewImage: SafeUrl };
 
@@ -20,6 +21,7 @@ export class DashboardComponent implements OnInit {
   filterText: string;
 
   constructor(
+    private snackBar: SnackBarService,
     private sanitizer: DomSanitizer,
     private uploadDialog: MatDialog,
     private router: Router,
@@ -38,9 +40,12 @@ export class DashboardComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.caffService.searchCaffFile("").subscribe(caffs => this.caffs = caffs.map(caff => ({
-      ...caff, previewImage: this.sanitizer.bypassSecurityTrustUrl(URL.createObjectURL(caff.preview))
-    })));
+    this.caffService.searchCaffFile("").subscribe({
+      next: caffs => this.caffs = caffs.map(caff => ({
+        ...caff, previewImage: this.sanitizer.bypassSecurityTrustUrl(URL.createObjectURL(caff.preview))
+      })),
+      error: () => this.snackBar.error("Could not load CAFF files! The server probably can't be reached!")
+    });
     this.filteredCaffs = this.caffs;
   }
 

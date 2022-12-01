@@ -18,6 +18,7 @@ export class UploadDialogComponent {
 
   uploadFile(title: string) {
     if (!this.file) {
+      this.snackBar.error("No file was selected to upload!");
       return;
     }
 
