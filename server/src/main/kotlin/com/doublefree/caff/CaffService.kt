@@ -5,30 +5,41 @@ import eu.jrie.jetbrains.kotlinshell.shell.shell
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.springframework.core.io.FileUrlResource
 import org.springframework.core.io.Resource
-import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
-import org.springframework.web.bind.annotation.PathVariable
 import java.io.IOException
+import java.time.OffsetDateTime
 
 @Service
-class CaffService(private val caffRepository: CaffRepository) {
+class CaffService(
+    private val caffRepository: CaffRepository,
+    private val commentRepository: CommentRepository,
+    private val purchaseTokenRepository: PurchaseTokenRepository,
+) {
 
     fun getComments(caffId: Long): List<CommentDto> {
-        throw NotImplementedError()
+        return commentRepository.findByCaffId(caffId).map { it.toDto() }
     }
 
     fun deleteComment(commentId: Long) {
-        throw NotImplementedError()
+        commentRepository.deleteById(commentId)
     }
 
-    fun createComment(caffId: Long, body: String): IdResponseDto {
-        throw NotImplementedError()
+    fun createComment(caffId: Long, userName: String, body: String): IdResponseDto {
+        return IdResponseDto(
+            commentRepository.save(
+                Comment(
+                    0,
+                    caffId,
+                    userName,
+                    OffsetDateTime.now(),
+                    body
+                )
+            ).Id
+        )
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     fun deleteCaffFile(id: Long) {
-        //TODO permission check
         caffRepository.deleteById(id)
         shell {
             file("uploads/raw/$id.caff").delete()

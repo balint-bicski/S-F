@@ -18,8 +18,8 @@ class CaffController(
 
     override fun createComment(id: Long, body: String): ResponseEntity<IdResponseDto> {
         //TODO yadda-yadda
-        val userId: Long = -1; //TODO userID !
-        return ResponseEntity.ok(caffService.createComment(id, userId, body))
+        val userName: String = "NoOne"; //TODO userName !
+        return ResponseEntity.ok(caffService.createComment(id, userName, body))
     }
 
     override fun deleteCaffFile(id: Long): ResponseEntity<Unit> {
