@@ -7,9 +7,11 @@ import org.springframework.core.io.FileUrlResource
 import org.springframework.core.io.Resource
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.stereotype.Service
 import org.springframework.web.bind.annotation.PathVariable
 import java.io.IOException
 
+@Service
 class CaffService(private val caffRepository: CaffRepository) {
 
     fun getComments(caffId: Long): List<CommentDto> {
@@ -30,7 +32,7 @@ class CaffService(private val caffRepository: CaffRepository) {
         caffRepository.deleteById(id)
         shell {
             file("uploads/raw/$id.caff").delete()
-            file("uploads/prev/$id.png").delete()
+            file("uploads/prev/$id.bmp").delete()
         }
     }
 
@@ -104,7 +106,7 @@ class CaffService(private val caffRepository: CaffRepository) {
 
                 //invoke parser
                 val parserOutput = StringBuilder()
-                pipeline { "parser/caff_parser temp.caff temp.png".process() pipe parserOutput }
+                pipeline { "parser/caff_parser temp.caff temp.bmp".process() pipe parserOutput }
 
                 //evaluate result
                 caffId = insertCaffIntoDB(parserOutput.toString(), title, uploader)
@@ -112,7 +114,7 @@ class CaffService(private val caffRepository: CaffRepository) {
                 //move to
                 if (caffId != null) {
                     file("temp.caff").renameTo(file("uploads/raw/$caffId.caff"))
-                    file("temp.png").renameTo(file("uploads/prev/$caffId.caff"))
+                    file("temp.bmp").renameTo(file("uploads/prev/$caffId.bmp"))
                 }
             }
             return caffId
@@ -126,7 +128,7 @@ class CaffService(private val caffRepository: CaffRepository) {
         } finally {
             shell {
                 file("temp.caff").delete()
-                file("temp.png").delete()
+                file("temp.bmp").delete()
             }
         }
     }
