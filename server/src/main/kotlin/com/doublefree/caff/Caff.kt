@@ -26,6 +26,9 @@ class Caff(
     val ciffCount: Int,
 
     @Column(nullable = false)
+    val size: Int,
+
+    @Column(nullable = false)
     var title: String,
 
     ) {
@@ -45,7 +48,7 @@ class Caff(
             uploader,
             createdDate,
             ciffCount,
-            11111, //TODO add size property
+            size,
             title,
             FileUrlResource("uploads/prev/$Id.png")
         )

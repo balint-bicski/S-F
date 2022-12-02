@@ -34,7 +34,8 @@ class CaffController(
 
     override fun downloadCaffFile(id: Long): ResponseEntity<Resource> {
         //TODO yadda-yadda
-        return ResponseEntity.ok(caffService.downloadCaffFile(id))
+        //TODO cursed feature, tread cautiously
+        return ResponseEntity.ok(caffService.downloadCaffFile(id, 0))
     }
 
     override fun getCaffFile(id: Long, token: String): ResponseEntity<CaffDto> {

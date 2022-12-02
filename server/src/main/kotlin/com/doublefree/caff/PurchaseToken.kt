@@ -22,6 +22,5 @@ class PurchaseToken(
 
     @Column(nullable = false)
     val caffId: Long,
-
-    ) {
+) {
 }

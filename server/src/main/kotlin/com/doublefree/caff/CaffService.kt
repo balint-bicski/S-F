@@ -47,41 +47,54 @@ class CaffService(
         }
     }
 
-    fun downloadCaffFile(id: Long): Resource {
-        //TODO purchase check, don't use tainted Id
-        return FileUrlResource("uploads/raw/$id.caff")
+    fun downloadCaffFile(caffId: Long, userId: Long): Resource {
+        //TODO cursed feature
+        //val token = purchaseTokenRepository.find(caffId, userId)
+
+        return FileUrlResource("uploads/raw/$caffId.caff")
     }
 
-    fun purchaseCaffFile(id: Long): PurchaseTokenDto {
-        throw NotImplementedError()
+    fun purchaseCaffFile(caffId: Long, userId: Long): PurchaseTokenDto {
+        fun generateToken() : String {
+            return "Unsafe. Don't use. Easy to guess. Help me!"
+        }
+        var token = PurchaseToken(
+            0,
+            generateToken(),
+            userId,
+            caffId
+        )
+        val tokenId = purchaseTokenRepository.save(token)
+        if(tokenId != null) {
+            return PurchaseTokenDto(token.token)
+        }
+        throw java.lang.IllegalStateException("Couldn't create purchase token. This is bad.")
     }
 
     fun getCaffDetails(id: Long): CaffDto {
         return caffRepository.findById(id).get().toDto()
     }
 
-    fun searchByTitle(title: String) : List<CaffSummaryDto> {
-        return caffRepository.findByTitle(title).map { it.toSummary() }
+    fun searchByTitle(title: String?) : List<CaffSummaryDto> {
+        return caffRepository.findByTitle(title ?: "").map { it.toSummary() }
     }
 
     fun updateTitle(id: Long, title: String) {
-        //TODO permission check
         val found = caffRepository.findById(id).get()
         found.title = title
         caffRepository.save(found)
     }
 
-    fun create(caffFileDto : CaffFileDto) : IdResponseDto {
-        //TODO login check
+    fun create(caffFileDto : CaffFileDto, uploader: String) : IdResponseDto {
         val id = processIncomingCaff(
             caffFileDto.file.inputStream.readAllBytes(),
             caffFileDto.title,
-            "TODO: uploader"
+            uploader,
         )
         return IdResponseDto(id)
     }
 
-    private fun insertCaffIntoDB(parserOutput: String, title: String, uploader: String) : Long? {
+    private fun insertCaffIntoDB(parserOutput: String, title: String, uploader: String, fileSize: Int) : Long? {
         //TODO: somebody grab a Json deserializer
         val parsedOutput = ParserOutput()
         if (parsedOutput.success == "yes") {
@@ -92,7 +105,8 @@ class CaffService(
                     uploader,
                     parsedOutput.data.credits.date,
                     parsedOutput.data.ciff_count,
-                    title
+                    fileSize,
+                    title,
                 )
                 return caffRepository.save(caff).Id
             }
@@ -120,7 +134,7 @@ class CaffService(
                 pipeline { "parser/caff_parser temp.caff temp.bmp".process() pipe parserOutput }
 
                 //evaluate result
-                caffId = insertCaffIntoDB(parserOutput.toString(), title, uploader)
+                caffId = insertCaffIntoDB(parserOutput.toString(), title, uploader, data.size)
 
                 //move to
                 if (caffId != null) {
