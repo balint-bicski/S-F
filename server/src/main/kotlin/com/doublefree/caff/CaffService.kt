@@ -1,6 +1,9 @@
 package com.doublefree.caff
 
 import com.doublefree.api.model.*
+import com.fasterxml.jackson.databind.JsonDeserializer
+import com.fasterxml.jackson.databind.JsonSerializer
+import com.fasterxml.jackson.databind.ObjectMapper
 import eu.jrie.jetbrains.kotlinshell.shell.shell
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.springframework.core.io.FileUrlResource
@@ -95,8 +98,7 @@ class CaffService(
     }
 
     private fun insertCaffIntoDB(parserOutput: String, title: String, uploader: String, fileSize: Int) : Long? {
-        //TODO: somebody grab a Json deserializer
-        val parsedOutput = ParserOutput()
+        val parsedOutput = ObjectMapper().readValue(parserOutput, ParserOutput::class.java)
         if (parsedOutput.success == "yes") {
             if (parsedOutput.data?.preview_created == "yes") {
                 val caff = Caff(
