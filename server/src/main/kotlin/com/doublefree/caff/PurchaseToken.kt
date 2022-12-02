@@ -1,5 +1,6 @@
 package com.doublefree.caff
 
+import java.time.OffsetDateTime
 import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.GeneratedValue
@@ -15,7 +16,7 @@ class PurchaseToken(
     val Id: Long? = null,
 
     @Column(nullable = false)
-    val token: String,
+    val created: OffsetDateTime,
 
     @Column(nullable = false)
     val userId: Long,

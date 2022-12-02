@@ -52,24 +52,25 @@ class CaffService(
 
     fun downloadCaffFile(caffId: Long, userId: Long): Resource {
         //TODO cursed feature
-        //val token = purchaseTokenRepository.find(caffId, userId)
+        val skipAuthorization = true //for testing only
 
-        return FileUrlResource("uploads/raw/$caffId.caff")
+        val token = purchaseTokenRepository.findByCaffIdAndUserId(caffId, userId).firstOrNull()
+        if(token != null || skipAuthorization) {
+            return FileUrlResource("uploads/raw/$caffId.caff")
+        }
+        throw Exception("Not authorized to download")
     }
 
     fun purchaseCaffFile(caffId: Long, userId: Long): PurchaseTokenDto {
-        fun generateToken() : String {
-            return "Unsafe. Don't use. Easy to guess. Help me!"
-        }
-        var token = PurchaseToken(
+        val token = PurchaseToken(
             0,
-            generateToken(),
+            OffsetDateTime.now(),
             userId,
             caffId
         )
-        val tokenId = purchaseTokenRepository.save(token)
-        if(tokenId != null) {
-            return PurchaseTokenDto(token.token)
+        val created = purchaseTokenRepository.save(token)
+        if(created.Id != null) {
+            return PurchaseTokenDto(token.created.toString())
         }
         throw java.lang.IllegalStateException("Couldn't create purchase token. This is bad.")
     }

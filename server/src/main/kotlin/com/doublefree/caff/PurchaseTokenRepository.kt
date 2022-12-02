@@ -3,6 +3,5 @@ package com.doublefree.caff;
 import org.springframework.data.jpa.repository.JpaRepository
 
 interface PurchaseTokenRepository : JpaRepository<PurchaseToken, Long> {
-    fun findByToken(token: String): PurchaseToken
-    fun findByCaffId(caffId: Long): List<PurchaseToken>
+    fun findByCaffIdAndUserId(caffId: Long, userId: Long): List<PurchaseToken>
 }
