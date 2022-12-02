@@ -24,7 +24,12 @@
       <mat-card-content>
         <div class="row">
           <div class="col-12 col-md-2" style="color: #666666;">{{comment.createdDate}} - {{comment.creator}}</div>
-          <div class="col-12 col-md-10">{{comment.content}}</div>
+          <div class="col-8 col-md-8">{{comment.content}}</div>
+          <div class="col-4 col-md-2">
+            <button mat-raised-button class="w-100" color="accent" (click)="deleteComment(comment.id)">
+              Admin: Delete
+            </button>
+          </div>
         </div>
       </mat-card-content>
     </mat-card>
