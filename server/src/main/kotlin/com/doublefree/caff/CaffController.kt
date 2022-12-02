@@ -12,44 +12,55 @@ class CaffController(
     private val caffService: CaffService
 ) : CaffFileApi {
     override fun createCaffFile(caffFileDto: CaffFileDto): ResponseEntity<IdResponseDto> {
-        val response = caffService.create(caffFileDto)
+        val response = caffService.create(caffFileDto, "TODO uploader") //TODO uploader
         return ResponseEntity.status(HttpStatus.CREATED).body(response)
     }
 
     override fun createComment(id: Long, body: String): ResponseEntity<IdResponseDto> {
-        return super.createComment(id, body)
+        //TODO yadda-yadda
+        val userId: Long = -1; //TODO userID !
+        return ResponseEntity.ok(caffService.createComment(id, userId, body))
     }
 
     override fun deleteCaffFile(id: Long): ResponseEntity<Unit> {
-        return super.deleteCaffFile(id)
+        //TODO yadda-yadda
+        return ResponseEntity.ok(caffService.deleteCaffFile(id))
     }
 
     override fun deleteComment(id: Long, commentId: Long): ResponseEntity<Unit> {
-        return super.deleteComment(id, commentId)
+        //TODO yadda-yadda
+        return ResponseEntity.ok(caffService.deleteComment(id))
     }
 
     override fun downloadCaffFile(id: Long): ResponseEntity<Resource> {
-        return super.downloadCaffFile(id)
+        //TODO yadda-yadda
+        return ResponseEntity.ok(caffService.downloadCaffFile(id))
     }
 
     override fun getCaffFile(id: Long, token: String): ResponseEntity<CaffDto> {
-        return super.getCaffFile(id, token)
+        //TODO yadda-yadda
+        return ResponseEntity.ok(caffService.getCaffDetails(id))
     }
 
     override fun getComments(id: Long): ResponseEntity<List<CommentDto>> {
-        return super.getComments(id)
+        //TODO yadda-yadda
+        return ResponseEntity.ok(caffService.getComments(id))
     }
 
     override fun purchaseCaffFile(id: Long): ResponseEntity<PurchaseTokenDto> {
-        return super.purchaseCaffFile(id)
+        //TODO yadda-yadda
+        val userId: Long = -1; //TODO userId !
+        return ResponseEntity.ok(caffService.purchaseCaffFile(id, userId))
     }
 
     override fun searchCaffFile(title: String?): ResponseEntity<List<CaffSummaryDto>> {
-        return super.searchCaffFile(title)
+        //TODO yadda-yadda
+        return ResponseEntity.ok(caffService.searchByTitle(title))
     }
 
     override fun updateCaffFile(id: Long, body: String): ResponseEntity<Unit> {
-        return super.updateCaffFile(id, body)
+        //TODO yadda-yadda
+        return ResponseEntity.ok(caffService.updateTitle(id, body))
     }
 
 }
