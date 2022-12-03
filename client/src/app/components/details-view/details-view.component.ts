@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
 import {Authority, CaffDto, CaffFileService} from "../../../../target/generated-sources";
 import {DomSanitizer, SafeUrl} from "@angular/platform-browser";
@@ -6,7 +6,7 @@ import {SnackBarService} from "../../services/snack-bar.service";
 import {TitleEditDialogComponent} from "./title-edit-dialog.component";
 import {MatDialog} from "@angular/material/dialog";
 import {AuthService} from "../../services/auth.service";
-import {toSafeUrl} from "../../util/encoding.util";
+import {timestampPrettyPrint, toSafeUrl} from "../../util/encoding.util";
 
 @Component({
   selector: 'app-details-view',
@@ -75,10 +75,10 @@ export class DetailsViewComponent {
   // Populates the details table with the relevant key-value pairs.
   private loadDetailsTableContent(caff: CaffDto): void {
     this.detailsData = [{key: "Original creator:", value: caff.creator},
-      {key: "Creation date:", value: caff.createdDate},
+      {key: "Creation date:", value: timestampPrettyPrint(caff.createdDate)},
       {key: "Number of frames:", value: caff.ciffCount},
       {key: "Uploader:", value: caff.uploader},
-      {key: "File size:", value: caff.size}];
+      {key: "File size:", value: caff.size + " bytes"}];
   }
 
   // Decides whether the user is an admin currently or not

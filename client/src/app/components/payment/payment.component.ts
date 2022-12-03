@@ -32,7 +32,12 @@ export class PaymentComponent implements OnInit {
       next: data => {
         const blob = new Blob([data], {type: 'application/octet-stream'});
         const url = URL.createObjectURL(blob);
-        window.open(url);
+
+        var link = document.createElement("a");
+        link.href = url;
+        link.download = "caff-" + this.caffId + ".caff";
+        link.click();
+
         this.router.navigate(['/details/' + this.caffId]);
       },
       error: () => this.snackBar.error("Could not verify payment with server!")

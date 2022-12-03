@@ -3,6 +3,7 @@ import {Authority, CaffFileService, CommentDto} from "../../../../target/generat
 import {SnackBarService} from "../../services/snack-bar.service";
 import {FormControl} from "@angular/forms";
 import {AuthService} from "../../services/auth.service";
+import {timestampPrettyPrint} from "../../util/encoding.util";
 
 @Component({
   selector: 'app-comments',
@@ -38,7 +39,9 @@ export class CommentsComponent {
 
   loadComments() {
     this.caffService.getComments(this._caffId).subscribe({
-      next: comments => this.comments = comments,
+      next: comments => {
+        this.comments = comments.map(it => ({...it, createdDate: timestampPrettyPrint(it.createdDate)}))
+      },
       error: () => this.snackBar.error("Could not load comments! The server probably can't be reached!")
     });
   }

@@ -16,3 +16,8 @@ export function toBlob(text: string, type: string = "image/bmp"): Promise<Blob> 
 export function toSafeUrl(text: string, sanitizer: DomSanitizer, type: string = "image/bmp"): Promise<SafeUrl> {
   return toBlob(text, type).then(blob => sanitizer.bypassSecurityTrustUrl(URL.createObjectURL(blob)))
 }
+
+// Takes a timestamp (that counts time in seconds) and returns a pretty, formatted date-time string
+export function timestampPrettyPrint(timestamp: string): string {
+  return new Date(Number(timestamp) * 1000).toLocaleString("hu-HU")
+}
