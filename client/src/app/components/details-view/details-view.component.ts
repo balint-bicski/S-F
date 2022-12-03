@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
 import {Authority, CaffDto, CaffFileService} from "../../../../target/generated-sources";
 import {DomSanitizer, SafeUrl} from "@angular/platform-browser";
@@ -6,6 +6,7 @@ import {SnackBarService} from "../../services/snack-bar.service";
 import {TitleEditDialogComponent} from "./title-edit-dialog.component";
 import {MatDialog} from "@angular/material/dialog";
 import {AuthService} from "../../services/auth.service";
+import {toSafeUrl} from "../../util/encoding.util";
 
 @Component({
   selector: 'app-details-view',
@@ -14,7 +15,7 @@ import {AuthService} from "../../services/auth.service";
 export class DetailsViewComponent {
   // CAFF data and preview image.
   caff?: CaffDto;
-  caffPreview?: SafeUrl;
+  caffPreview?: Promise<SafeUrl>;
 
   // CAFF details table information.
   displayedColumns: string[] = ['key', 'value'];
@@ -64,8 +65,8 @@ export class DetailsViewComponent {
     this.caffService.getCaffFile(caffId).subscribe({
       next: caff => {
         this.caff = caff;
-        //this.caffPreview = toSafeUrl(caff.preview, this.sanitizer);
-        this.loadDetailsTableContent(caff)
+        this.caffPreview = toSafeUrl(caff.preview, this.sanitizer);
+        this.loadDetailsTableContent(caff);
       },
       error: () => this.snackBar.error("Could not load selected CAFF! Either the server can't be reached, or no such CAFF exists!")
     });

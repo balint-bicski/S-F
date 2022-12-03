@@ -4,7 +4,7 @@
     <div class="col-9 col-md-11">
       <mat-card>
         <mat-form-field style="width: 100%;">
-          <input (ngModelChange)="onFilterChanged()" [(ngModel)]="filterText" matInput placeholder="Type here to filter by title..."
+          <input [(ngModel)]="filterText" (ngModelChange)="onFilterChanged()" matInput placeholder="Type here to filter by title..."
                  style="width: 100%;" type="text">
         </mat-form-field>
       </mat-card>
@@ -21,7 +21,7 @@
       <mat-card (click)="onListElementClicked(caff.id)">
         <mat-card-title>{{caff.title}}</mat-card-title>
         <img alt="CAFF preview image" class="mt-2 px-3" mat-card-image
-             src="{{caff.previewImage | async}}">
+             [src]="caff.previewImage | async">
       </mat-card>
     </div>
   </div>

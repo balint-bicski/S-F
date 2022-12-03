@@ -11,7 +11,7 @@
       <div class="row">
         <!-- Preview image -->
         <div class="col-12 col-md-7 text-center">
-          <img alt="CAFF preview image" src="{{caffPreview}}" style="object-fit: cover; width: auto; height: 25em;">
+          <img alt="CAFF preview image" [src]="caffPreview | async" style="object-fit: cover; width: auto; height: 25em;">
         </div>
 
         <!-- Details table -->
@@ -36,20 +36,20 @@
                 Back
               </button>
             </div>
-            <div class="col-6">
-              <button *ngIf="showPurchaseButton" (click)="onPurchaseButtonClicked()" class="w-100" color="primary" mat-raised-button>
+            <div class="col-6" *ngIf="showPurchaseButton">
+              <button (click)="onPurchaseButtonClicked()" class="w-100" color="primary" mat-raised-button>
                 Purchase
               </button>
             </div>
           </div>
           <div class="row mt-3">
-            <div class="col-6">
-              <button *ngIf="showTitleEditButton" (click)="onEditTitleButtonClicked()" mat-raised-button class="w-100" color="accent">
+            <div class="col-6" *ngIf="showTitleEditButton">
+              <button (click)="onEditTitleButtonClicked()" mat-raised-button class="w-100" color="accent">
                 Admin: Edit title
               </button>
             </div>
-            <div class="col-6">
-              <button *ngIf="showDeleteButton" (click)="onDeleteFileButtonClicked()"mat-raised-button class="w-100" color="accent">
+            <div class="col-6" *ngIf="showDeleteButton">
+              <button (click)="onDeleteFileButtonClicked()" mat-raised-button class="w-100" color="accent">
                 Admin: Delete file
               </button>
             </div>
