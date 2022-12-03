@@ -1,8 +1,11 @@
 import {Component} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
-import {CaffDto, CaffFileService} from "../../../../target/generated-sources";
+import {Authority, CaffDto, CaffFileService} from "../../../../target/generated-sources";
 import {DomSanitizer, SafeUrl} from "@angular/platform-browser";
 import {SnackBarService} from "../../services/snack-bar.service";
+import {TitleEditDialogComponent} from "./title-edit-dialog.component";
+import {MatDialog} from "@angular/material/dialog";
+import {AuthService} from "../../services/auth.service";
 
 @Component({
   selector: 'app-details-view',
@@ -17,14 +20,22 @@ export class DetailsViewComponent {
   displayedColumns: string[] = ['key', 'value'];
   detailsData: Array<Object> = [];
 
+  // User information for conditional element display.
+  showPurchaseButton: boolean = false;
+  showTitleEditButton: boolean = false;
+  showDeleteButton: boolean = false;
+
   constructor(
     private snackBar: SnackBarService,
     private router: Router,
     private route: ActivatedRoute,
     private sanitizer: DomSanitizer,
-    private caffService: CaffFileService
+    private caffService: CaffFileService,
+    private editDialog: MatDialog,
+    private authService: AuthService
   ) {
     this.loadCaffDetails();
+    this.decideUserPermissions();
     // TODO Temp values until backend is working
     /*this.caff = {
       ciffCount: 2,
@@ -67,5 +78,25 @@ export class DetailsViewComponent {
       {key: "Number of frames:", value: caff.ciffCount},
       {key: "Uploader:", value: caff.uploader},
       {key: "File size:", value: caff.size}];
+  }
+
+  // Decides whether the user is an admin currently or not
+  private decideUserPermissions() {
+    this.showPurchaseButton = this.authService.isUserLoggedIn && this.authService.hasAuthority(Authority.Payment);
+    this.showTitleEditButton = this.authService.isUserLoggedIn && this.authService.hasAuthority(Authority.ModifyCaff);
+    this.showDeleteButton = this.authService.isUserLoggedIn && this.authService.hasAuthority(Authority.DeleteCaff);
+  }
+
+  onEditTitleButtonClicked() {
+    let ref = this.editDialog.open(TitleEditDialogComponent);
+    ref.componentInstance.caffId = this.caff.id;
+    ref.componentInstance.originalTitle = this.caff.title;
+  }
+
+  onDeleteFileButtonClicked() {
+    this.caffService.deleteCaffFile(this.caff.id).subscribe({
+      next: () => this.router.navigate(['/']),
+      error: () => this.snackBar.error("Could not delete file! Make sure you have the proper permissions to do so!")
+    });
   }
 }

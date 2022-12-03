@@ -10,7 +10,7 @@
       </mat-card>
     </div>
 
-    <div class="col-3 col-md-1 my-auto">
+    <div class="col-3 col-md-1 my-auto" *ngIf="showUploadButton">
       <button (click)="onUploadButtonClicked()" class="w-100" color="primary" mat-raised-button>Upload</button>
     </div>
   </div>

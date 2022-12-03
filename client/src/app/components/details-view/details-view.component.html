@@ -37,8 +37,20 @@
               </button>
             </div>
             <div class="col-6">
-              <button (click)="onPurchaseButtonClicked()" class="w-100" color="primary" mat-raised-button>
+              <button *ngIf="showPurchaseButton" (click)="onPurchaseButtonClicked()" class="w-100" color="primary" mat-raised-button>
                 Purchase
+              </button>
+            </div>
+          </div>
+          <div class="row mt-3">
+            <div class="col-6">
+              <button *ngIf="showTitleEditButton" (click)="onEditTitleButtonClicked()" mat-raised-button class="w-100" color="accent">
+                Admin: Edit title
+              </button>
+            </div>
+            <div class="col-6">
+              <button *ngIf="showDeleteButton" (click)="onDeleteFileButtonClicked()"mat-raised-button class="w-100" color="accent">
+                Admin: Delete file
               </button>
             </div>
           </div>

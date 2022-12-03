@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {AuthService} from "../../services/auth.service";
-import {CaffFileService, CaffSummaryDto} from "../../../../target/generated-sources";
+import {Authority, CaffFileService, CaffSummaryDto} from "../../../../target/generated-sources";
 import {DomSanitizer, SafeUrl} from "@angular/platform-browser";
 import {Router} from "@angular/router";
 import {MatDialog} from "@angular/material/dialog";
@@ -20,6 +20,9 @@ export class DashboardComponent implements OnInit {
   // Contains a filtered array based on the filter text.
   filteredCaffs: Array<SummaryWithPreview>;
   filterText: string;
+
+  // User information for conditional element display.
+  showUploadButton: boolean = false;
 
   constructor(
     private snackBar: SnackBarService,
@@ -48,6 +51,8 @@ export class DashboardComponent implements OnInit {
       },
       error: () => this.snackBar.error("Could not load CAFF files! The server probably can't be reached!")
     });
+
+    this.showUploadButton = this.authService.isUserLoggedIn && this.authService.hasAuthority(Authority.UploadCaff);
   }
 
   // Redirects when a card was clicked.

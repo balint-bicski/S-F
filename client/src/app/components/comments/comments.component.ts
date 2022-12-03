@@ -1,7 +1,8 @@
 import {Component, Input} from "@angular/core";
-import {CaffFileService, CommentDto} from "../../../../target/generated-sources";
+import {Authority, CaffFileService, CommentDto} from "../../../../target/generated-sources";
 import {SnackBarService} from "../../services/snack-bar.service";
 import {FormControl} from "@angular/forms";
+import {AuthService} from "../../services/auth.service";
 
 @Component({
   selector: 'app-comments',
@@ -12,10 +13,16 @@ export class CommentsComponent {
   noteControl = new FormControl("");
   comments: Array<CommentDto> = [];
 
+  // User permissions for conditional formatting.
+  showDeleteButtons: boolean = false;
+  showSubmitButton: boolean = false;
+
   constructor(
     private snackBar: SnackBarService,
-    private caffService: CaffFileService
+    private caffService: CaffFileService,
+    private authService: AuthService
   ) {
+    this.decideUserPermissions();
   }
 
   _caffId?: number;
@@ -51,5 +58,10 @@ export class CommentsComponent {
       next: () => this.loadComments(),
       error: () => this.snackBar.error("Comment could not be removed!")
     });
+  }
+
+  private decideUserPermissions() {
+    this.showSubmitButton = this.authService.isUserLoggedIn && this.authService.hasAuthority(Authority.WriteNote);
+    this.showDeleteButtons = this.authService.isUserLoggedIn && this.authService.hasAuthority(Authority.DeleteNote);
   }
 }

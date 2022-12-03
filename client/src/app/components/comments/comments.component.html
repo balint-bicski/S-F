@@ -2,7 +2,7 @@
   <h2 class="mb-1">Comments</h2>
 
   <!-- New comment form -->
-  <mat-card class="mb-3">
+  <mat-card class="mb-3" *ngIf="showSubmitButton">
     <div class="row align-items-center">
       <div class="col-12 col-md-10">
         <mat-form-field class="w-100 m-0">
@@ -24,10 +24,11 @@
       <mat-card-content>
         <div class="row">
           <div class="col-12 col-md-2" style="color: #666666;">{{comment.createdDate}} - {{comment.creator}}</div>
-          <div class="col-12 col-md-8">{{comment.content}}</div>
-          <div class="col-12 col-md-2">
-            <button (click)="deleteComment(comment.id)" class="w-100" color="warn" mat-raised-button>
-              Submit
+          <div class="col-8 col-md-8">{{comment.content}}</div>
+          <div class="col-4 col-md-2">
+            <button *ngIf="showDeleteButtons"
+              mat-raised-button class="w-100" color="accent" (click)="deleteComment(comment.id)">
+              Admin: Delete
             </button>
           </div>
         </div>
