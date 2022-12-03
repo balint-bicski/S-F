@@ -16,22 +16,26 @@ class CaffController(
     @PreAuthorize("hasAuthority(T(com.doublefree.api.model.Authority).UPLOAD_CAFF)")
     override fun createCaffFile(title: String, file: Resource): ResponseEntity<IdResponseDto> {
         val response = caffService.create(title, file)
-        return ResponseEntity.status(HttpStatus.CREATED).body(response)
+        return if(response.id == null) {
+            ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).build()
+        } else {
+            ResponseEntity.status(HttpStatus.CREATED).body(response)
+        }
     }
 
     @PreAuthorize("hasAuthority(T(com.doublefree.api.model.Authority).WRITE_NOTE)")
     override fun createComment(id: Long, body: String): ResponseEntity<IdResponseDto> {
-        return ResponseEntity.ok(caffService.createComment(id, body))
+        return ResponseEntity.status(HttpStatus.CREATED).body(caffService.createComment(id, body))
     }
 
     @PreAuthorize("hasAuthority(T(com.doublefree.api.model.Authority).DELETE_CAFF)")
     override fun deleteCaffFile(id: Long): ResponseEntity<Unit> {
-        return ResponseEntity.ok(caffService.deleteCaffFile(id))
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(caffService.deleteCaffFile(id))
     }
 
     @PreAuthorize("hasAuthority(T(com.doublefree.api.model.Authority).DELETE_NOTE)")
     override fun deleteComment(id: Long, commentId: Long): ResponseEntity<Unit> {
-        return ResponseEntity.ok(caffService.deleteComment(id))
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(caffService.deleteComment(id))
     }
 
     @PreAuthorize("hasAuthority(T(com.doublefree.api.model.Authority).DOWNLOAD_CAFF)")
