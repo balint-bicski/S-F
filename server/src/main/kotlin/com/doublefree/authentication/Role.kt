@@ -11,6 +11,7 @@ enum class Role(private vararg val authorities: Authority) {
         Authority.DOWNLOAD_CAFF,
         Authority.UPLOAD_CAFF,
         Authority.SEARCH_CAFF,
+        Authority.PAYMENT,
         Authority.WRITE_NOTE
     );
 
