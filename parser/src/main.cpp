@@ -5,8 +5,8 @@
 
 void print_error(const char* reason) {
     std::cout << "{" << std::endl;
-    std::cout << "  success: \"no\"," << std::endl;
-    std::cout << "  reason: \"" << reason << "\"" << std::endl;
+    std::cout << "  \"success\": \"no\"," << std::endl;
+    std::cout << "  \"reason\": \"" << reason << "\"" << std::endl;
     std::cout << "}" << std::endl;
 }
 
@@ -32,8 +32,8 @@ int main(int argc, char** argv) {
             }
 
             std::cout << "{" << std::endl;
-            std::cout << "  success: \"yes\"," << std::endl;
-            std::cout << "  data:";
+            std::cout << "  \"success\": \"yes\"," << std::endl;
+            std::cout << "  \"data\":";
             caff.print_metadata(std::cout, 2);
             std::cout << "}" << std::endl;
         } else {
