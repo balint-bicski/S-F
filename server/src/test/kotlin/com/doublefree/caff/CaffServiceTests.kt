@@ -31,21 +31,21 @@ class CaffServiceTests {
 
     @Test
     fun getComments_empty_with_no_result() {
-        every { commentRepository.findByCaffId(any()) } returns listOf()
+        every { commentRepository.findByCaffIdOrderByCreatedDate(any()) } returns listOf()
 
         val result = service.getComments(0)
 
-        verify { commentRepository.findByCaffId(0) }
+        verify { commentRepository.findByCaffIdOrderByCreatedDate(0) }
         assert(result.isEmpty())
     }
 
     @Test
     fun getComments_correct_when_result() {
-        every { commentRepository.findByCaffId(any()) } returns listOf(comment)
+        every { commentRepository.findByCaffIdOrderByCreatedDate(any()) } returns listOf(comment)
 
         val result = service.getComments(0)
 
-        verify { commentRepository.findByCaffId(0) }
+        verify { commentRepository.findByCaffIdOrderByCreatedDate(0) }
         assert(result.size == 1)
         assert(result.first().content == comment.content)
         assert(result.first().creator == comment.creator)
@@ -53,13 +53,13 @@ class CaffServiceTests {
 
     @Test
     fun getComments_orders_by_createdDate() {
-        every { commentRepository.findByCaffId(any()) } returns listOf(
+        every { commentRepository.findByCaffIdOrderByCreatedDate(any()) } returns listOf(
             comment, comment.copy(content = "Earlier", createdDate = OffsetDateTime.MIN)
-        )
+        ).reversed()
 
         val result = service.getComments(0)
 
-        verify { commentRepository.findByCaffId(0) }
+        verify { commentRepository.findByCaffIdOrderByCreatedDate(0) }
         assert(result.size == 2)
         assert(result[0].content == "Earlier")
         assert(result[1].content == comment.content)
