@@ -47,7 +47,7 @@ class CaffController(
         return ResponseEntity.ok(caffService.getComments(id))
     }
 
-    @PreAuthorize("hasAuthority(T(com.doublefree.api.model.Authority).DOWNLOAD_CAFF)")
+    @PreAuthorize("hasAuthority(T(com.doublefree.api.model.Authority).PAYMENT)")
     override fun purchaseCaffFile(id: Long): ResponseEntity<PurchaseTokenDto> {
         return ResponseEntity.ok(caffService.purchaseCaffFile(id))
     }

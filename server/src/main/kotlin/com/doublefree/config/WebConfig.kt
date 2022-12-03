@@ -32,7 +32,7 @@ class WebConfig(private val jwtAuthenticationFilter: JwtAuthenticationFilter) : 
 
     @Bean
     fun webSecurityCustomizer() =
-        WebSecurityCustomizer { web -> web.ignoring().antMatchers("/", "/**/*.{js,html,ico}") }
+        WebSecurityCustomizer { web -> web.ignoring().antMatchers("/**/*.{js,html,ico}") }
 
     @Bean
     @Throws(Exception::class)
@@ -71,6 +71,8 @@ class WebConfig(private val jwtAuthenticationFilter: JwtAuthenticationFilter) : 
     private fun authorizeRequests(http: HttpSecurity) {
         http
             .authorizeRequests()
+            .antMatchers("/api/caff-files", "/api/caff-files/*").permitAll()
+            .antMatchers("/api/caff-files/*/comments").permitAll()
             .antMatchers("/api/auth/**").permitAll()
             .anyRequest().fullyAuthenticated()
     }

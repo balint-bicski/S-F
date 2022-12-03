@@ -120,7 +120,7 @@ class CaffService(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun processIncomingCaff(data: ByteArray, title: String, uploader: String): Long? {
-        var caffId: Long? = null;
+        var caffId: Long? = null
         try {
             shell {
                 //check if folder exists, create if no

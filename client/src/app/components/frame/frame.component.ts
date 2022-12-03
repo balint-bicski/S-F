@@ -16,6 +16,6 @@ export class FrameComponent {
   }
 
   hasRightToAccess(authority: Authority): boolean {
-    return this.authService.hasAuthority(authority);
+    return this.authService.isUserLoggedIn && this.authService.hasAuthority(authority);
   }
 }
