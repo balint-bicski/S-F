@@ -1,19 +1,17 @@
-import {Component, OnInit} from '@angular/core';
+import {Component} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
 import {CaffDto, CaffFileService} from "../../../../target/generated-sources";
 import {DomSanitizer, SafeUrl} from "@angular/platform-browser";
-import {getItemFromStorage} from "../../util/session-storage.util";
-import {TOKEN} from "../../util/session-storage-constant";
 import {SnackBarService} from "../../services/snack-bar.service";
 
 @Component({
   selector: 'app-details-view',
   templateUrl: './details-view.component.html'
 })
-export class DetailsViewComponent implements OnInit {
+export class DetailsViewComponent {
   // CAFF data and preview image.
-  caff: CaffDto | undefined;
-  caffPreview: SafeUrl | undefined;
+  caff?: CaffDto;
+  caffPreview?: SafeUrl;
 
   // CAFF details table information.
   displayedColumns: string[] = ['key', 'value'];
@@ -26,8 +24,9 @@ export class DetailsViewComponent implements OnInit {
     private sanitizer: DomSanitizer,
     private caffService: CaffFileService
   ) {
+    this.loadCaffDetails();
     // TODO Temp values until backend is working
-    this.caff = {
+    /*this.caff = {
       ciffCount: 2,
       createdDate: "2022-11-22",
       creator: "Attila",
@@ -37,12 +36,7 @@ export class DetailsViewComponent implements OnInit {
       title: "The CAFF that doesn't exist",
       uploader: "xXx_attila_xXx"
     };
-    this.caffPreview = "https://picsum.photos/300/200";
-  }
-
-  ngOnInit() {
-    this.loadCaffDetails();
-    this.loadDetailsTableContent(this.caff);
+    this.caffPreview = "https://picsum.photos/300/200";*/
   }
 
   onBackButtonClicked() {
@@ -56,11 +50,11 @@ export class DetailsViewComponent implements OnInit {
   // Retrieves the CAFF to display from the server.
   private loadCaffDetails(): void {
     const caffId = Number(this.route.snapshot.paramMap.get('caffId'));
-
-    this.caffService.getCaffFile(caffId, getItemFromStorage(TOKEN) || "").subscribe({
+    this.caffService.getCaffFile(caffId).subscribe({
       next: caff => {
         this.caff = caff;
-        this.caffPreview = this.sanitizer.bypassSecurityTrustUrl(URL.createObjectURL(caff.preview));
+        //this.caffPreview = toSafeUrl(caff.preview, this.sanitizer);
+        this.loadDetailsTableContent(caff)
       },
       error: () => this.snackBar.error("Could not load selected CAFF! Either the server can't be reached, or no such CAFF exists!")
     });
@@ -68,10 +62,10 @@ export class DetailsViewComponent implements OnInit {
 
   // Populates the details table with the relevant key-value pairs.
   private loadDetailsTableContent(caff: CaffDto): void {
-    this.detailsData.push({ key: "Original creator:", value: caff.creator });
-    this.detailsData.push({ key: "Creation date:", value: caff.createdDate });
-    this.detailsData.push({ key: "Number of frames:", value: caff.ciffCount });
-    this.detailsData.push({ key: "Uploader:", value: caff.uploader });
-    this.detailsData.push({ key: "File size:", value: caff.size });
+    this.detailsData = [{key: "Original creator:", value: caff.creator},
+      {key: "Creation date:", value: caff.createdDate},
+      {key: "Number of frames:", value: caff.ciffCount},
+      {key: "Uploader:", value: caff.uploader},
+      {key: "File size:", value: caff.size}];
   }
 }

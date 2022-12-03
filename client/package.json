@@ -23,6 +23,7 @@
     "@angular/platform-browser": "~14.2.10",
     "@angular/platform-browser-dynamic": "~14.2.10",
     "@angular/router": "~14.2.10",
+    "base64-blob": "^1.4.1",
     "bootstrap": "^5.2.2",
     "rxjs": "~7.5.7",
     "tslib": "^2.4.1",

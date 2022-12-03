@@ -6,8 +6,9 @@ import {Router} from "@angular/router";
 import {MatDialog} from "@angular/material/dialog";
 import {UploadDialogComponent} from "./upload-dialog.component";
 import {SnackBarService} from "../../services/snack-bar.service";
+import {toSafeUrl} from "../../util/encoding.util";
 
-type SummaryWithPreview = CaffSummaryDto & { previewImage: SafeUrl };
+type SummaryWithPreview = CaffSummaryDto & { previewImage: Promise<SafeUrl> };
 
 @Component({
   selector: 'app-dashboard',
@@ -29,24 +30,24 @@ export class DashboardComponent implements OnInit {
     private caffService: CaffFileService
   ) {
     // TODO Temporary until backend is working
-    this.caffs = [
-      {id: 0, title: "You are", preview: new Blob(), previewImage: "https://picsum.photos/300/200"},
-      {id: 1, title: "My fire", preview: new Blob(), previewImage: "https://picsum.photos/300/200"},
-      {id: 2, title: "The one", preview: new Blob(), previewImage: "https://picsum.photos/300/200"},
-      {id: 3, title: "Desire", preview: new Blob(), previewImage: "https://picsum.photos/300/200"},
-      {id: 4, title: "Believe when I say", preview: new Blob(), previewImage: "https://picsum.photos/300/200"},
-      {id: 5, title: "I want it that way", preview: new Blob(), previewImage: "https://picsum.photos/300/200"},
-    ];
+    /*    this.caffs = [
+          {id: 0, title: "You are", preview: "", previewImage: "https://picsum.photos/300/200"},
+          {id: 1, title: "My fire", preview: "", previewImage: "https://picsum.photos/300/200"},
+          {id: 2, title: "The one", preview: "", previewImage: "https://picsum.photos/300/200"},
+          {id: 3, title: "Desire", preview: "", previewImage: "https://picsum.photos/300/200"},
+          {id: 4, title: "Believe when I say", preview: "", previewImage: "https://picsum.photos/300/200"},
+          {id: 5, title: "I want it that way", preview: "", previewImage: "https://picsum.photos/300/200"},
+        ];*/
   }
 
   ngOnInit() {
     this.caffService.searchCaffFile("").subscribe({
-      next: caffs => this.caffs = caffs.map(caff => ({
-        ...caff, previewImage: this.sanitizer.bypassSecurityTrustUrl(URL.createObjectURL(caff.preview))
-      })),
+      next: caffs => {
+        this.caffs = caffs.map(caff => ({...caff, previewImage: toSafeUrl(caff.preview, this.sanitizer)}));
+        this.filteredCaffs = this.caffs;
+      },
       error: () => this.snackBar.error("Could not load CAFF files! The server probably can't be reached!")
     });
-    this.filteredCaffs = this.caffs;
   }
 
   // Redirects when a card was clicked.

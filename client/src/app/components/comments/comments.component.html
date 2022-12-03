@@ -3,28 +3,33 @@
 
   <!-- New comment form -->
   <mat-card class="mb-3">
-      <div class="row align-items-center">
-        <div class="col-12 col-md-10">
-          <mat-form-field class="w-100 m-0">
-            <mat-label>Leave a comment</mat-label>
-            <textarea matInput #newCommentTextArea rows="3"></textarea>
-          </mat-form-field>
-        </div>
-        <div class="col-12 col-md-2">
-          <button mat-raised-button color="primary" class="w-100" (click)="sendComment(newCommentTextArea.value)">
-            Submit
-          </button>
-        </div>
+    <div class="row align-items-center">
+      <div class="col-12 col-md-10">
+        <mat-form-field class="w-100 m-0">
+          <mat-label>Leave a comment</mat-label>
+          <textarea [formControl]="noteControl" matInput rows="3"></textarea>
+        </mat-form-field>
       </div>
+      <div class="col-12 col-md-2">
+        <button (click)="sendComment()" class="w-100" color="primary" mat-raised-button>
+          Submit
+        </button>
+      </div>
+    </div>
   </mat-card>
 
   <!-- List of previous comments -->
-  <div class="mt-2" *ngFor="let comment of comments.reverse()">
+  <div *ngFor="let comment of comments.reverse()" class="mt-2">
     <mat-card>
       <mat-card-content>
         <div class="row">
           <div class="col-12 col-md-2" style="color: #666666;">{{comment.createdDate}} - {{comment.creator}}</div>
-          <div class="col-12 col-md-10">{{comment.content}}</div>
+          <div class="col-12 col-md-8">{{comment.content}}</div>
+          <div class="col-12 col-md-2">
+            <button (click)="deleteComment(comment.id)" class="w-100" color="warn" mat-raised-button>
+              Submit
+            </button>
+          </div>
         </div>
       </mat-card-content>
     </mat-card>

@@ -1,22 +1,25 @@
 package com.doublefree.caff
 
 import com.doublefree.api.model.*
-import com.fasterxml.jackson.databind.JsonDeserializer
-import com.fasterxml.jackson.databind.JsonSerializer
+import com.doublefree.user.UserService
+import com.doublefree.util.FileUtil.Companion.getResource
+import com.doublefree.util.UserUtil.Companion.emailOfLoggedInUser
 import com.fasterxml.jackson.databind.ObjectMapper
 import eu.jrie.jetbrains.kotlinshell.shell.shell
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import org.springframework.core.io.FileUrlResource
+import org.springframework.core.io.InputStreamResource
 import org.springframework.core.io.Resource
 import org.springframework.stereotype.Service
 import java.io.IOException
-import java.time.OffsetDateTime
+import java.time.ZoneOffset
 
 @Service
 class CaffService(
     private val caffRepository: CaffRepository,
     private val commentRepository: CommentRepository,
     private val purchaseTokenRepository: PurchaseTokenRepository,
+    private val userService: UserService,
+    private val objectMapper: ObjectMapper
 ) {
 
     fun getComments(caffId: Long): List<CommentDto> {
@@ -27,17 +30,13 @@ class CaffService(
         commentRepository.deleteById(commentId)
     }
 
-    fun createComment(caffId: Long, userName: String, body: String): IdResponseDto {
+    fun createComment(caffId: Long, body: String): IdResponseDto {
         return IdResponseDto(
             commentRepository.save(
                 Comment(
-                    0,
-                    caffId,
-                    userName,
-                    OffsetDateTime.now(),
-                    body
+                    caffId = caffId, creator = emailOfLoggedInUser(), content = body
                 )
-            ).Id
+            ).id
         )
     }
 
@@ -50,74 +49,66 @@ class CaffService(
         }
     }
 
-    fun downloadCaffFile(caffId: Long, userId: Long): Resource {
-        //TODO cursed feature
-        val skipAuthorization = true //for testing only
-
+    fun downloadCaffFile(caffId: Long): InputStreamResource {
+        val userId = userService.currentUser().id!!
         val token = purchaseTokenRepository.findByCaffIdAndUserId(caffId, userId).firstOrNull()
-        if(token != null || skipAuthorization) {
-            return FileUrlResource("uploads/raw/$caffId.caff")
+        if (token != null) {
+            return getResource("uploads/raw/$caffId.caff")
         }
         throw Exception("Not authorized to download")
     }
 
-    fun purchaseCaffFile(caffId: Long, userId: Long): PurchaseTokenDto {
-        val token = PurchaseToken(
-            0,
-            OffsetDateTime.now(),
-            userId,
-            caffId
-        )
-        val created = purchaseTokenRepository.save(token)
-        if(created.Id != null) {
-            return PurchaseTokenDto(token.created.toString())
+    fun purchaseCaffFile(caffId: Long): PurchaseTokenDto {
+        val userId = userService.currentUser().id!!
+        val token = purchaseTokenRepository.findByCaffIdAndUserId(caffId, userId).firstOrNull()
+        if (token != null) {
+            return token.toDto()
         }
-        throw java.lang.IllegalStateException("Couldn't create purchase token. This is bad.")
+        val created = purchaseTokenRepository.save(PurchaseToken(caffId = caffId, userId = userId))
+        return PurchaseTokenDto(token = created.token.toString())
     }
 
     fun getCaffDetails(id: Long): CaffDto {
         return caffRepository.findById(id).get().toDto()
     }
 
-    fun searchByTitle(title: String?) : List<CaffSummaryDto> {
-        return caffRepository.findByTitle(title ?: "").map { it.toSummary() }
+    fun searchByTitle(title: String?): List<CaffSummaryDto> {
+        return caffRepository.findByTitleContainingIgnoreCase(title).map { it.toSummary() }
     }
 
     fun updateTitle(id: Long, title: String) {
-        val found = caffRepository.findById(id).get()
+        val found = caffRepository.findById(id).orElseThrow { NoSuchElementException("No CAFF found with id: $id") }
         found.title = title
         caffRepository.save(found)
     }
 
-    fun create(caffFileDto : CaffFileDto, uploader: String) : IdResponseDto {
+    fun create(title: String, file: Resource): IdResponseDto {
         val id = processIncomingCaff(
-            caffFileDto.file.inputStream.readAllBytes(),
-            caffFileDto.title,
-            uploader,
+            file.inputStream.readAllBytes(),
+            title,
+            emailOfLoggedInUser(),
         )
         return IdResponseDto(id)
     }
 
-    private fun insertCaffIntoDB(parserOutput: String, title: String, uploader: String, fileSize: Int) : Long? {
-        val parsedOutput = ObjectMapper().readValue(parserOutput, ParserOutput::class.java)
+    private fun insertCaffIntoDB(parserOutput: String, title: String, uploader: String, fileSize: Int): Long? {
+        val parsedOutput = objectMapper.readValue(parserOutput, ParserOutput::class.java)
         if (parsedOutput.success == "yes") {
-            if (parsedOutput.data?.preview_created == "yes") {
+            if (parsedOutput.data?.previewCreated == "yes") {
                 val caff = Caff(
                     null,
                     parsedOutput.data.credits.creator,
                     uploader,
-                    parsedOutput.data.credits.date,
-                    parsedOutput.data.ciff_count,
+                    parsedOutput.data.credits.date.atOffset(ZoneOffset.UTC),
+                    parsedOutput.data.ciffCount,
                     fileSize,
                     title,
                 )
-                return caffRepository.save(caff).Id
-            }
-            else {
+                return caffRepository.save(caff).id
+            } else {
                 throw IllegalStateException("Parse successful but review not created. Aborting upload.")
             }
-        }
-        else {
+        } else {
             print("Couldn't process uploaded CAFF: ")
             println(parsedOutput.reason)
             return null
@@ -126,7 +117,7 @@ class CaffService(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun processIncomingCaff(data: ByteArray, title: String, uploader: String): Long? {
-        var caffId : Long? = null;
+        var caffId: Long? = null;
         try {
             shell {
                 //create temp file
@@ -149,8 +140,7 @@ class CaffService(
         } catch (ex: IOException) {
             ex.printStackTrace()
             return null
-        }
-        catch (ex: IllegalStateException) {
+        } catch (ex: IllegalStateException) {
             ex.printStackTrace()
             return null
         } finally {

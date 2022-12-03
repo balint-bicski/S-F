@@ -22,7 +22,7 @@ export class UploadDialogComponent {
       return;
     }
 
-    this.caffService.createCaffFile({ file: this.file, title: title }).subscribe({
+    this.caffService.createCaffFile(title, this.file).subscribe({
       next: response => this.router.navigate(['/details/' + response.id]),
       error: () => this.snackBar.error("Could not create new CAFF file, please try again!")
     })

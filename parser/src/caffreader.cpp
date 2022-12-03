@@ -12,7 +12,7 @@ CAFF CAFFReader::get() {
     if (parse_called && parse_successful) {
         return data;
     }
-     
+
     throw "CAFFReader::get called without a successful parse first!";
 }
 

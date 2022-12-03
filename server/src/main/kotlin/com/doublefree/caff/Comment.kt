@@ -5,26 +5,26 @@ import java.time.OffsetDateTime
 import javax.persistence.*
 
 @Entity
-@Table(name="comments")
-class Comment (
+@Table(name = "comment")
+class Comment(
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "doublefree_id_sequence")
-    val Id: Long? = null,
-
-    @Column(nullable = false)
-    val caffId: Long,
+    val id: Long? = null,
 
     @Column(nullable = false)
     val creator: String,
 
     @Column(nullable = false)
-    val createdDate: OffsetDateTime,
+    val createdDate: OffsetDateTime = OffsetDateTime.now(),
 
     @Column(nullable = false)
     val content: String,
-){
+
+    @Column(nullable = false)
+    val caffId: Long,
+) {
     fun toDto() = CommentDto(
-        Id,
+        id,
         creator,
         createdDate,
         content

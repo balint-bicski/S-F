@@ -9,24 +9,32 @@ import {SnackBarService} from "../../services/snack-bar.service";
 })
 export class PaymentComponent implements OnInit {
   caffId: number | undefined;
+  token: string;
 
   constructor(
     private snackBar: SnackBarService,
     private router: Router,
     private route: ActivatedRoute,
     private caffService: CaffFileService
-  ) {}
+  ) {
+  }
 
   ngOnInit() {
     this.caffId = Number(this.route.snapshot.paramMap.get('caffId'));
   }
 
-  onButtonClicked() {
-    this.caffService.downloadCaffFile(this.caffId).subscribe({
-      next: blob => {
-        var url = URL.createObjectURL(blob);
-        window.open(url);
+  onPurchase() {
+    this.caffService.purchaseCaffFile(this.caffId).subscribe(result => this.token = result.token);
+  }
 
+  onDownload() {
+    this.caffService.downloadCaffFile(this.caffId, this.token).subscribe({
+      next: data => {
+        const blob = new Blob([data], {type: 'application/octet-stream'});
+        const url = URL.createObjectURL(blob);
+        window.open(url);
+        const blob = new Blob([data], {type: 'application/octet-stream'});
+        saveAs(blob, this.selectedFileLog.fileName);
         this.router.navigate(['/details/' + this.caffId]);
       },
       error: () => this.snackBar.error("Could not verify payment with server!")

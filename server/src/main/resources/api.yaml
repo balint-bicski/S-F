@@ -122,7 +122,7 @@ paths:
         description: CaffFileDto
         required: true
         content:
-          application/json:
+          multipart/form-data:
             schema:
               $ref: '#/components/schemas/CaffFileDto'
       responses:
@@ -165,12 +165,6 @@ paths:
     parameters:
       - $ref: '#/components/parameters/idPathParam'
     get:
-      parameters:
-        - name: token
-          in: query
-          required: true
-          schema:
-            type: string
       operationId: getCaffFile
       responses:
         200:
@@ -197,7 +191,7 @@ paths:
     put:
       operationId: updateCaffFile
       requestBody:
-        description: CaffFileDto
+        description: title of caff file
         required: true
         content:
           application/json:
@@ -297,12 +291,17 @@ paths:
     get:
       parameters:
         - $ref: '#/components/parameters/idPathParam'
+        - name: token
+          in: query
+          required: true
+          schema:
+            type: string
       operationId: downloadCaffFile
       responses:
         200:
           description: Operation successful
           content:
-            application/json:
+            application/octet-stream:
               schema:
                 $ref: '#/components/schemas/Binary'
         #401:
@@ -327,6 +326,10 @@ components:
     Binary:
       type: string
       format: binary
+
+    Byte:
+      type: string
+      format: byte
 
     IdResponseDto:
       type: object
@@ -370,9 +373,6 @@ components:
     CaffFileDto:
       type: object
       properties:
-        id:
-          type: integer
-          format: int64
         title:
           type: string
         file:
@@ -390,10 +390,9 @@ components:
         title:
           type: string
         preview:
-          $ref: '#/components/schemas/Binary'
+          $ref: '#/components/schemas/Byte'
       required:
         - title
-        - preview
 
     CaffDto:
       type: object
@@ -415,7 +414,7 @@ components:
         title:
           type: string
         preview:
-          $ref: '#/components/schemas/Binary'
+          $ref: '#/components/schemas/Byte'
       required:
         - creator
 
@@ -438,6 +437,8 @@ components:
           format: date-time
         content:
           type: string
+        caff:
+          $ref: '#/components/schemas/CaffDto'
 
     ValidationExceptionDto:
       properties:

@@ -5,62 +5,59 @@ import com.doublefree.api.model.*
 import org.springframework.core.io.Resource
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
 class CaffController(
     private val caffService: CaffService
 ) : CaffFileApi {
-    override fun createCaffFile(caffFileDto: CaffFileDto): ResponseEntity<IdResponseDto> {
-        val response = caffService.create(caffFileDto, "TODO uploader") //TODO uploader
+
+    @PreAuthorize("hasAuthority(T(com.doublefree.api.model.Authority).UPLOAD_CAFF)")
+    override fun createCaffFile(title: String, file: Resource): ResponseEntity<IdResponseDto> {
+        val response = caffService.create(title, file)
         return ResponseEntity.status(HttpStatus.CREATED).body(response)
     }
 
+    @PreAuthorize("hasAuthority(T(com.doublefree.api.model.Authority).WRITE_NOTE)")
     override fun createComment(id: Long, body: String): ResponseEntity<IdResponseDto> {
-        //TODO yadda-yadda
-        val userName: String = "NoOne"; //TODO userName !
-        return ResponseEntity.ok(caffService.createComment(id, userName, body))
+        return ResponseEntity.ok(caffService.createComment(id, body))
     }
 
+    @PreAuthorize("hasAuthority(T(com.doublefree.api.model.Authority).DELETE_CAFF)")
     override fun deleteCaffFile(id: Long): ResponseEntity<Unit> {
-        //TODO yadda-yadda
         return ResponseEntity.ok(caffService.deleteCaffFile(id))
     }
 
+    @PreAuthorize("hasAuthority(T(com.doublefree.api.model.Authority).DELETE_NOTE)")
     override fun deleteComment(id: Long, commentId: Long): ResponseEntity<Unit> {
-        //TODO yadda-yadda
         return ResponseEntity.ok(caffService.deleteComment(id))
     }
 
-    override fun downloadCaffFile(id: Long): ResponseEntity<Resource> {
-        //TODO yadda-yadda
-        //TODO cursed feature, tread cautiously
-        return ResponseEntity.ok(caffService.downloadCaffFile(id, 0))
+    @PreAuthorize("hasAuthority(T(com.doublefree.api.model.Authority).DOWNLOAD_CAFF)")
+    override fun downloadCaffFile(id: Long, token: String): ResponseEntity<Resource> {
+        return ResponseEntity.ok(caffService.downloadCaffFile(id))
     }
 
-    override fun getCaffFile(id: Long, token: String): ResponseEntity<CaffDto> {
-        //TODO yadda-yadda
+    override fun getCaffFile(id: Long): ResponseEntity<CaffDto> {
         return ResponseEntity.ok(caffService.getCaffDetails(id))
     }
 
     override fun getComments(id: Long): ResponseEntity<List<CommentDto>> {
-        //TODO yadda-yadda
         return ResponseEntity.ok(caffService.getComments(id))
     }
 
+    @PreAuthorize("hasAuthority(T(com.doublefree.api.model.Authority).DOWNLOAD_CAFF)")
     override fun purchaseCaffFile(id: Long): ResponseEntity<PurchaseTokenDto> {
-        //TODO yadda-yadda
-        val userId: Long = -1; //TODO userId !
-        return ResponseEntity.ok(caffService.purchaseCaffFile(id, userId))
+        return ResponseEntity.ok(caffService.purchaseCaffFile(id))
     }
 
     override fun searchCaffFile(title: String?): ResponseEntity<List<CaffSummaryDto>> {
-        //TODO yadda-yadda
         return ResponseEntity.ok(caffService.searchByTitle(title))
     }
 
+    @PreAuthorize("hasAuthority(T(com.doublefree.api.model.Authority).MODIFY_CAFF)")
     override fun updateCaffFile(id: Long, body: String): ResponseEntity<Unit> {
-        //TODO yadda-yadda
         return ResponseEntity.ok(caffService.updateTitle(id, body))
     }
 

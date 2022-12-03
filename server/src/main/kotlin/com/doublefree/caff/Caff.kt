@@ -2,16 +2,16 @@ package com.doublefree.caff
 
 import com.doublefree.api.model.CaffDto
 import com.doublefree.api.model.CaffSummaryDto
-import com.fasterxml.jackson.annotation.JsonProperty
-import org.springframework.core.io.FileUrlResource
+import com.doublefree.util.FileUtil.Companion.getBytes
+import java.time.OffsetDateTime
 import javax.persistence.*
 
 @Entity
-@Table(name="caff_metadata")
+@Table(name = "caff_metadata")
 class Caff(
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "doublefree_id_sequence")
-    val Id: Long? = null,
+    val id: Long? = null,
 
     @Column(nullable = false)
     val creator: String,
@@ -20,7 +20,7 @@ class Caff(
     val uploader: String,
 
     @Column(nullable = false)
-    val createdDate: java.time.OffsetDateTime,
+    val createdDate: OffsetDateTime,
 
     @Column(nullable = false)
     val ciffCount: Int,
@@ -34,23 +34,12 @@ class Caff(
     ) {
 
     fun toSummary(): CaffSummaryDto {
-        return CaffSummaryDto(
-            title,
-            FileUrlResource("uploads/prev/$Id.png"),
-            Id
-        )
+        return CaffSummaryDto(title, id, getBytes("/uploads/prev/$id.bmp"))
     }
 
     fun toDto(): CaffDto {
         return CaffDto(
-            creator,
-            Id,
-            uploader,
-            createdDate,
-            ciffCount,
-            size,
-            title,
-            FileUrlResource("uploads/prev/$Id.png")
+            creator, id, uploader, createdDate, ciffCount, size, title, getBytes("/uploads/prev/$id.caff")
         )
     }
 }

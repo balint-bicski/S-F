@@ -5,5 +5,5 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface CaffRepository : JpaRepository<Caff, Long> {
-    fun findByTitle(title: String): List<Caff>
+    fun findByTitleContainingIgnoreCase(title: String?): List<Caff>
 }
