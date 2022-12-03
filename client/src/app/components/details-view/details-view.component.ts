@@ -1,12 +1,13 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
-import {CaffDto, CaffFileService} from "../../../../target/generated-sources";
+import {Authority, CaffDto, CaffFileService} from "../../../../target/generated-sources";
 import {DomSanitizer, SafeUrl} from "@angular/platform-browser";
 import {getItemFromStorage} from "../../util/session-storage.util";
 import {TOKEN} from "../../util/session-storage-constant";
 import {SnackBarService} from "../../services/snack-bar.service";
 import {TitleEditDialogComponent} from "./title-edit-dialog.component";
 import {MatDialog} from "@angular/material/dialog";
+import {AuthService} from "../../services/auth.service";
 
 @Component({
   selector: 'app-details-view',
@@ -21,6 +22,11 @@ export class DetailsViewComponent implements OnInit {
   displayedColumns: string[] = ['key', 'value'];
   detailsData: Array<Object> = [];
 
+  // User information for conditional element display.
+  showPurchaseButton: boolean = false;
+  showTitleEditButton: boolean = false;
+  showDeleteButton: boolean = false;
+
   constructor(
     private snackBar: SnackBarService,
     private router: Router,
@@ -28,6 +34,7 @@ export class DetailsViewComponent implements OnInit {
     private sanitizer: DomSanitizer,
     private caffService: CaffFileService,
     private editDialog: MatDialog,
+    private authService: AuthService
   ) {
     // TODO Temp values until backend is working
     this.caff = {
@@ -46,6 +53,7 @@ export class DetailsViewComponent implements OnInit {
   ngOnInit() {
     this.loadCaffDetails();
     this.loadDetailsTableContent(this.caff);
+    this.decideUserPermissions();
   }
 
   onBackButtonClicked() {
@@ -76,6 +84,13 @@ export class DetailsViewComponent implements OnInit {
     this.detailsData.push({ key: "Number of frames:", value: caff.ciffCount });
     this.detailsData.push({ key: "Uploader:", value: caff.uploader });
     this.detailsData.push({ key: "File size:", value: caff.size });
+  }
+
+  // Decides whether the user is an admin currently or not
+  private decideUserPermissions() {
+    this.showPurchaseButton = this.authService.isUserLoggedIn && this.authService.hasAuthority(Authority.Payment);
+    this.showTitleEditButton = this.authService.isUserLoggedIn && this.authService.hasAuthority(Authority.ModifyCaff);
+    this.showDeleteButton = this.authService.isUserLoggedIn && this.authService.hasAuthority(Authority.DeleteCaff);
   }
 
   onEditTitleButtonClicked() {

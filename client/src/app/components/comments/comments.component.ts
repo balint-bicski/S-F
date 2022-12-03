@@ -1,6 +1,7 @@
 import {Component, Input, OnInit} from "@angular/core";
-import {CaffFileService, CommentDto} from "../../../../target/generated-sources";
+import {Authority, CaffFileService, CommentDto} from "../../../../target/generated-sources";
 import {SnackBarService} from "../../services/snack-bar.service";
+import {AuthService} from "../../services/auth.service";
 
 @Component({
   selector: 'app-comments',
@@ -12,9 +13,14 @@ export class CommentsComponent implements OnInit {
   // The list of previous comments.
   comments: Array<CommentDto>;
 
+  // User permissions for conditional formatting.
+  showDeleteButtons: boolean = false;
+  showSubmitButton: boolean = false;
+
   constructor(
     private snackBar: SnackBarService,
-    private caffService: CaffFileService
+    private caffService: CaffFileService,
+    private authService: AuthService
   ) {
     // TODO Temporary until backend is working
     this.comments = [
@@ -25,6 +31,7 @@ export class CommentsComponent implements OnInit {
 
   ngOnInit() {
     this.loadComments();
+    this.decideUserPermissions();
   }
 
   loadComments() {
@@ -46,5 +53,10 @@ export class CommentsComponent implements OnInit {
       next: () => this.loadComments(),
       error: () => this.snackBar.error("Comment could not be removed!")
     });
+  }
+
+  private decideUserPermissions() {
+    this.showSubmitButton = this.authService.isUserLoggedIn && this.authService.hasAuthority(Authority.WriteNote);
+    this.showDeleteButtons = this.authService.isUserLoggedIn && this.authService.hasAuthority(Authority.DeleteNote);
   }
 }
