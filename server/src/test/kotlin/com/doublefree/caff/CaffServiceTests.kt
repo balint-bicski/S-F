@@ -1,5 +1,7 @@
 package com.doublefree.caff
 
+import com.doublefree.user.UserService
+import com.fasterxml.jackson.databind.ObjectMapper
 import io.mockk.*
 import org.junit.Test
 import org.junit.jupiter.api.assertDoesNotThrow
@@ -13,16 +15,18 @@ class CaffServiceTests {
     private val caffRepository: CaffRepository = mockk()
     private val commentRepository: CommentRepository = mockk()
     private val purchaseTokenRepository: PurchaseTokenRepository = mockk()
+    private val userService: UserService = mockk()
+    private val objectMapper: ObjectMapper = mockk()
 
-    private val service = CaffService(caffRepository, commentRepository, purchaseTokenRepository)
+    private val service = CaffService(caffRepository, commentRepository, purchaseTokenRepository, userService, objectMapper)
 
     private val caff = Caff(
-        Id = 0, creator = "Creator", uploader = "Uploader", createdDate = OffsetDateTime.now(),
+        id = 0, creator = "Creator", uploader = "Uploader", createdDate = OffsetDateTime.now(),
         ciffCount = 2, size = 2_000_000, title = "CAFF title"
     )
 
     private val comment = Comment(
-        Id = 0, caffId = 0, creator = "Creator", createdDate = OffsetDateTime.now(), content = "Sample comment"
+        id = 0, caffId = 0, creator = "Creator", createdDate = OffsetDateTime.now(), content = "Sample comment"
     )
 
     @Test
@@ -74,14 +78,14 @@ class CaffServiceTests {
     fun createComment_fails_with_nonexistent_caff_id() {
         every { caffRepository.existsById(any()) } returns false
 
-        assertThrows<IllegalArgumentException> { service.createComment(320, "username", "content") }
+        assertThrows<IllegalArgumentException> { service.createComment(320, "content") }
     }
 
     @Test
     fun createComment_fails_with_empty_body() {
         every { caffRepository.existsById(any()) } returns true
 
-        assertThrows<IllegalArgumentException> { service.createComment(0, "username", "") }
+        assertThrows<IllegalArgumentException> { service.createComment(0, "") }
     }
 
     @Test
@@ -89,30 +93,30 @@ class CaffServiceTests {
         every { caffRepository.existsById(any())} returns true
         every { commentRepository.save(any()) } returns comment
 
-        assertDoesNotThrow { service.createComment(0, "username", "content") }
+        assertDoesNotThrow { service.createComment(0, "content") }
 
         verify { commentRepository.save(any()) }
     }
 
     @Test
     fun searchByTitle_empty_with_no_result() {
-        every { caffRepository.findByTitle(any()) } returns listOf()
+        every { caffRepository.findByTitleContainingIgnoreCase(any()) } returns listOf()
 
         val result = service.searchByTitle("")
 
-        verify { caffRepository.findByTitle("") }
+        verify { caffRepository.findByTitleContainingIgnoreCase("") }
         assert(result.isEmpty())
     }
 
     @Test
     fun searchByTitle_correct_when_result() {
-        every { caffRepository.findByTitle(any()) } returns listOf(caff)
+        every { caffRepository.findByTitleContainingIgnoreCase(any()) } returns listOf(caff)
 
         val result = service.searchByTitle("")
 
-        verify { caffRepository.findByTitle("") }
+        verify { caffRepository.findByTitleContainingIgnoreCase("") }
         assert(result.size == 1)
-        assert(result.first().id == caff.Id)
+        assert(result.first().id == caff.id)
         assert(result.first().title == caff.title)
     }
 
@@ -132,7 +136,7 @@ class CaffServiceTests {
         val result = assertDoesNotThrow { service.getCaffDetails(0) }
 
         verify { caffRepository.findById(0) }
-        assert(result.id == caff.Id)
+        assert(result.id == caff.id)
         assert(result.creator == caff.creator)
     }
 

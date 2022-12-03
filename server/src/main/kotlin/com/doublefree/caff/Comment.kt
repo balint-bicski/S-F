@@ -6,7 +6,7 @@ import javax.persistence.*
 
 @Entity
 @Table(name = "comment")
-class Comment(
+data class Comment(
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "doublefree_id_sequence")
     val id: Long? = null,
