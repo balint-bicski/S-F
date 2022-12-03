@@ -7,7 +7,7 @@ import org.springframework.security.core.context.SecurityContextHolder
 class UserUtil {
 
     companion object {
-        fun emailOfLoggedInUser(): String = SecurityContextHolder.getContext().authentication.name
+        fun emailOfLoggedInUser(): String? = SecurityContextHolder.getContext()?.authentication?.name
     }
 
 }

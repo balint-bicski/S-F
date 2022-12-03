@@ -19,7 +19,7 @@ class UserService(private val userRepository: UserRepository, private val passwo
 
     fun currentUser(): UserDto {
         val emailOfLoggedInUser = UserUtil.emailOfLoggedInUser()
-        return findByEmail(emailOfLoggedInUser).orElseThrow { NoSuchElementException("No user found with email: $emailOfLoggedInUser") }
+        return findByEmail(emailOfLoggedInUser!!).orElseThrow { NoSuchElementException("No user found with email: $emailOfLoggedInUser") }
             .toDto()
     }
 

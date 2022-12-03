@@ -89,7 +89,7 @@ class CaffService(
         val id = processIncomingCaff(
             file.inputStream.readAllBytes(),
             title,
-            emailOfLoggedInUser(),
+            emailOfLoggedInUser()!!,
         )
         return IdResponseDto(id)
     }

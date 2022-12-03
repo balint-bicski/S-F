@@ -12,7 +12,7 @@ data class Comment(
     val id: Long? = null,
 
     @Column(nullable = false)
-    val creator: String,
+    val creator: String?,
 
     @Column(nullable = false)
     val createdDate: OffsetDateTime = OffsetDateTime.now(),
