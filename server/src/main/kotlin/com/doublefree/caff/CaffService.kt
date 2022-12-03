@@ -10,6 +10,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.springframework.core.io.InputStreamResource
 import org.springframework.core.io.Resource
 import org.springframework.stereotype.Service
+import java.io.File
 import java.io.IOException
 import java.time.ZoneOffset
 
@@ -120,20 +121,24 @@ class CaffService(
         var caffId: Long? = null;
         try {
             shell {
+                //check if folder exists, create if no
+                File("uploads/raw").mkdirs()
+                File("uploads/prev").mkdirs()
+
                 //create temp file
-                file("temp.caff").writeBytes(data)
+                file("uploads/temp.caff").writeBytes(data)
 
                 //invoke parser
                 val parserOutput = StringBuilder()
-                pipeline { "parser/caff_parser temp.caff temp.bmp".process() pipe parserOutput }
+                pipeline { "parser/caff_parser uploads/temp.caff uploads/temp.bmp".process() pipe parserOutput }
 
                 //evaluate result
                 caffId = insertCaffIntoDB(parserOutput.toString(), title, uploader, data.size)
 
                 //move to
                 if (caffId != null) {
-                    file("temp.caff").renameTo(file("uploads/raw/$caffId.caff"))
-                    file("temp.bmp").renameTo(file("uploads/prev/$caffId.bmp"))
+                    file("uploads/temp.caff").renameTo(file("uploads/raw/$caffId.caff"))
+                    file("uploads/temp.bmp").renameTo(file("uploads/prev/$caffId.bmp"))
                 }
             }
             return caffId
@@ -145,8 +150,8 @@ class CaffService(
             return null
         } finally {
             shell {
-                file("temp.caff").delete()
-                file("temp.bmp").delete()
+                file("uploads/temp.caff").delete()
+                file("uploads/temp.bmp").delete()
             }
         }
     }

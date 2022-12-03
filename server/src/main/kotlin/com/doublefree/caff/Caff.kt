@@ -34,12 +34,12 @@ class Caff(
     ) {
 
     fun toSummary(): CaffSummaryDto {
-        return CaffSummaryDto(title, id, getBytes("/uploads/prev/$id.bmp"))
+        return CaffSummaryDto(title, id, getBytes("uploads/prev/$id.bmp"))
     }
 
     fun toDto(): CaffDto {
         return CaffDto(
-            creator, id, uploader, createdDate, ciffCount, size, title, getBytes("/uploads/prev/$id.caff")
+            creator, id, uploader, createdDate, ciffCount, size, title, getBytes("uploads/prev/$id.bmp")
         )
     }
 }
