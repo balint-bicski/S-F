@@ -24,7 +24,7 @@ class CaffService(
 ) {
 
     fun getComments(caffId: Long): List<CommentDto> {
-        return commentRepository.findByCaffId(caffId).map { it.toDto() }
+        return commentRepository.findByCaffIdOrderByCreatedDate(caffId).map { it.toDto() }
     }
 
     fun deleteComment(commentId: Long) {
@@ -32,6 +32,8 @@ class CaffService(
     }
 
     fun createComment(caffId: Long, body: String): IdResponseDto {
+        if (body.isEmpty()) throw IllegalArgumentException("Comment cannot be empty")
+        if (!caffRepository.existsById(caffId)) throw IllegalArgumentException("No such CAFF exists")
         return IdResponseDto(
             commentRepository.save(
                 Comment(
