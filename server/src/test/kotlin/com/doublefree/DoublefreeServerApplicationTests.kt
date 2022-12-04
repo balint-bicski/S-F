@@ -1,7 +1,12 @@
 package com.doublefree
 
+import com.doublefree.api.model.Authority
+import com.doublefree.authentication.Role
 import com.doublefree.caff.Caff
 import com.doublefree.caff.CaffRepository
+import com.doublefree.user.User
+import com.doublefree.user.UserRepository
+import eu.jrie.jetbrains.kotlinshell.shell.shell
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -27,13 +32,25 @@ class DoublefreeServerApplicationTests {
 	@Autowired
 	lateinit var caffRepository: CaffRepository
 
+	@Autowired
+	lateinit var userRepository: UserRepository
+
+	private fun makeItSoUsersExist() {
+		if (userRepository.existsById(1) && userRepository.existsById(2)) return
+		userRepository.save(User(null, "hellothere", "password", Role.USER))
+		userRepository.save(User(null, "general_kenobi", "password", Role.ADMINISTRATOR))
+	}
+
 	@OptIn(ExperimentalCoroutinesApi::class)
 	private fun insertSampleCaff(): Long {
 		val id = caffRepository.save(Caff(
 			id = 0, creator = "Creator", uploader = "Uploader", createdDate = OffsetDateTime.now(),
 			ciffCount = 2, size = 2_000_000, title = "CAFF title"
 		)).id!!
-
+		shell {
+			file("uploads/raw/0.caff").copyTo(file("uploads/raw/$id.caff"), overwrite = true)
+			file("uploads/prev/0.bmp").copyTo(file("uploads/prev/$id.bmp"), overwrite = true)
+		}
 		return id
 	}
 
@@ -147,6 +164,7 @@ class DoublefreeServerApplicationTests {
 	@Test
 	@WithMockUser(username = "hellothere", password = "password", roles = ["USER"])
 	fun caffListAsRegularUser() {
+		makeItSoUsersExist()
 		caffRepository.deleteAll()
 
 		mockMvc
@@ -158,6 +176,7 @@ class DoublefreeServerApplicationTests {
 	@Test
 	@WithMockUser(username = "hellothere", password = "password", roles = ["USER"])
 	fun caffDetailsAsRegularUser(){
+		makeItSoUsersExist()
 		val id = insertSampleCaff()
 
 		mockMvc
@@ -168,27 +187,19 @@ class DoublefreeServerApplicationTests {
 
 	@Test
 	@WithMockUser(username = "hellothere", password = "password", roles = ["USER"])
-	fun purchaseCaffAsRegularUser(){
-		val id = insertSampleCaff()
-
+	fun uploadCaffAsRegularUser(){
+		makeItSoUsersExist()
 		mockMvc
-			.perform(post("/api/caff-files/$id/purchase"))
-			.andExpect(status().isCreated)
-	}
-
-	@Test
-	@WithMockUser(username = "hellothere", password = "password", roles = ["USER"])
-	fun downloadCaffAsRegularUser(){
-		val id = insertSampleCaff()
-
-		mockMvc
-			.perform(get("/api/caff-files/$id/download"))
-			.andExpect(status().isOk)
+			.perform(post("/api/caff-files")
+				.param("title", "test title")
+				.content(ByteArray(20000)))
+			.andExpect(status().is4xxClientError)
 	}
 
 	@Test
 	@WithMockUser(username = "hellothere", password = "password", roles = ["USER"])
 	fun deleteCaffAsRegularUser(){
+		makeItSoUsersExist()
 		val id = insertSampleCaff()
 
 		mockMvc
@@ -199,6 +210,7 @@ class DoublefreeServerApplicationTests {
 	@Test
 	@WithMockUser(username = "hellothere", password = "password", roles = ["USER"])
 	fun changeTitleAsRegularUser(){
+		makeItSoUsersExist()
 		val id = insertSampleCaff()
 
 		mockMvc
@@ -211,6 +223,7 @@ class DoublefreeServerApplicationTests {
 	@Test
 	@WithMockUser(username = "hellothere", password = "password", roles = ["USER"])
 	fun loadCommentsAsRegularUser() {
+		makeItSoUsersExist()
 		val id = insertSampleCaff()
 
 		mockMvc
@@ -219,21 +232,11 @@ class DoublefreeServerApplicationTests {
 			.andExpect(content().json("[]"))
 	}
 
-	@Test
-	@WithMockUser(username = "hellothere", password = "password", roles = ["USER"])
-	fun commentAsRegularUser(){
-		val id = insertSampleCaff()
-
-		mockMvc
-			.perform(post("/api/caff-files/$id/comments")
-				.contentType(MediaType.APPLICATION_JSON)
-				.content("{ \"content\": \"text\" }"))
-			.andExpect(status().isCreated)
-	}
 
 	@Test
 	@WithMockUser(username = "hellothere", password = "password", roles = ["USER"])
 	fun deleteCommentAsRegularUser(){
+		makeItSoUsersExist()
 		val id = insertSampleCaff()
 
 		mockMvc
@@ -244,6 +247,63 @@ class DoublefreeServerApplicationTests {
 	//
 	//With login as admin
 	//
+
+	@Test
+	@WithMockUser(username = "general_kenobi", password = "password", roles = ["ADMINISTRATOR"])
+	fun caffListAsAdministrator() {
+		makeItSoUsersExist()
+		caffRepository.deleteAll()
+
+		mockMvc
+			.perform(get("/api/caff-files"))
+			.andExpect(status().isOk)
+			.andExpect(content().json("[]"))
+	}
+
+	@Test
+	@WithMockUser(username = "general_kenobi", password = "password", roles = ["ADMINISTRATOR"])
+	fun caffDetailsAsAdministrator(){
+		makeItSoUsersExist()
+		val id = insertSampleCaff()
+
+		mockMvc
+			.perform(get("/api/caff-files/$id"))
+			.andExpect(status().isOk)
+			.andExpect(content().contentType(MediaType.APPLICATION_JSON))
+	}
+
+	@Test
+	fun uploadCaffAsAdministrator(){
+		makeItSoUsersExist()
+		mockMvc
+			.perform(post("/api/caff-files")
+				.param("title", "test title")
+				.content(ByteArray(20000)))
+			.andExpect(status().is4xxClientError)
+	}
+
+	@Test
+	@WithMockUser(username = "general_kenobi", password = "password", roles = ["ADMINISTRATOR"])
+	fun deleteCaffAsAdministrator(){
+		makeItSoUsersExist()
+		val id = insertSampleCaff()
+
+		mockMvc
+			.perform(delete("/api/caff-files/$id"))
+			.andExpect(status().isForbidden)
+	}
+
+	@Test
+	@WithMockUser(username = "general_kenobi", password = "password", roles = ["ADMINISTRATOR"])
+	fun loadCommentsAsAdministrator() {
+		makeItSoUsersExist()
+		val id = insertSampleCaff()
+
+		mockMvc
+			.perform(get("/api/caff-files/$id/comments"))
+			.andExpect(status().isOk)
+			.andExpect(content().json("[]"))
+	}
 
 	//
 	//Non-existing entities
@@ -262,6 +322,7 @@ class DoublefreeServerApplicationTests {
 	@Test
 	@WithMockUser(username = "hellothere", password = "password", roles = ["USER"])
 	fun uploadInvalidCaff(){
+		makeItSoUsersExist()
 		mockMvc
 			.perform(post("/api/caff-files")
 				.param("title", "test title")
