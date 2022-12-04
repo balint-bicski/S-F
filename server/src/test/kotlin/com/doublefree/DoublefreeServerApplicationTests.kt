@@ -52,7 +52,7 @@ class DoublefreeServerApplicationTests {
 			.perform(post("/api/caff-files")
 					.param("title", "test title")
 					.content(ByteArray(20000)))
-			.andExpect(status().isUnauthorized)
+			.andExpect(status().is4xxClientError)
 	}
 
 	@Test
@@ -101,7 +101,7 @@ class DoublefreeServerApplicationTests {
 			.perform(post("/api/caff-files/{id}/comments", 1)
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(""))
-			.andExpect(status().isUnauthorized)
+			.andExpect(status().is4xxClientError)
 	}
 
 	@Test
