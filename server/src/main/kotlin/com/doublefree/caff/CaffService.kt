@@ -23,6 +23,11 @@ class CaffService(
     private val userService: UserService,
     private val objectMapper: ObjectMapper
 ) {
+    companion object {
+        private const val uploads = "uploads"
+        private const val rawFolder = "$uploads/raw"
+        private const val prevFolder = "$uploads/prev"
+    }
 
     fun getComments(caffId: Long): List<CommentDto> {
         return commentRepository.findByCaffIdOrderByCreatedDate(caffId).map { it.toDto() }
@@ -51,8 +56,8 @@ class CaffService(
         purchaseTokenRepository.deleteAllByCaffId(id)
         caffRepository.deleteById(id)
         shell {
-            file("uploads/raw/$id.caff").delete()
-            file("uploads/prev/$id.bmp").delete()
+            file("$rawFolder/$id.caff").delete()
+            file("$prevFolder/$id.bmp").delete()
         }
     }
 
@@ -60,7 +65,7 @@ class CaffService(
         val userId = userService.currentUser().id!!
         val token = purchaseTokenRepository.findByCaffIdAndUserId(caffId, userId).firstOrNull()
         if (token != null) {
-            return getResource("uploads/raw/$caffId.caff")
+            return getResource("$rawFolder/$caffId.caff")
         }
         throw Exception("Not authorized to download")
     }
@@ -129,23 +134,23 @@ class CaffService(
         try {
             shell {
                 //check if folder exists, create if no
-                File("uploads/raw").mkdirs()
-                File("uploads/prev").mkdirs()
+                File(rawFolder).mkdirs()
+                File(prevFolder).mkdirs()
 
                 //create temp file
-                file("uploads/temp.caff").writeBytes(data)
+                file("$uploads/temp.caff").writeBytes(data)
 
                 //invoke parser
                 val parserOutput = StringBuilder()
-                pipeline { "parser/caff_parser uploads/temp.caff uploads/temp.bmp".process() pipe parserOutput }
+                pipeline { "parser/caff_parser $uploads/temp.caff $uploads/temp.bmp".process() pipe parserOutput }
 
                 //evaluate result
                 caffId = insertCaffIntoDB(parserOutput.toString(), title, uploader, data.size)
 
                 //move to
                 if (caffId != null) {
-                    file("uploads/temp.caff").renameTo(file("uploads/raw/$caffId.caff"))
-                    file("uploads/temp.bmp").renameTo(file("uploads/prev/$caffId.bmp"))
+                    file("$uploads/temp.caff").renameTo(file("$rawFolder/$caffId.caff"))
+                    file("$uploads/temp.bmp").renameTo(file("$prevFolder/$caffId.bmp"))
                 }
             }
             return caffId
@@ -157,8 +162,8 @@ class CaffService(
             return null
         } finally {
             shell {
-                file("uploads/temp.caff").delete()
-                file("uploads/temp.bmp").delete()
+                file("$uploads/temp.caff").delete()
+                file("$uploads/temp.bmp").delete()
             }
         }
     }
