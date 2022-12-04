@@ -136,8 +136,8 @@ class CaffServiceTests {
         val result = assertDoesNotThrow { service.getCaffDetails(0) }
 
         verify { caffRepository.findById(0) }
-        assert(result.id == caff.id)
-        assert(result.creator == caff.creator)
+        assert(result?.id == caff.id)
+        assert(result?.creator == caff.creator)
     }
 
     @Test

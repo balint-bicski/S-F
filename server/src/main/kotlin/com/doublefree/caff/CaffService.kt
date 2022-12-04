@@ -3,7 +3,6 @@ package com.doublefree.caff
 import com.doublefree.api.model.*
 import com.doublefree.user.UserService
 import com.doublefree.util.FileUtil.Companion.getResource
-import com.doublefree.util.UserUtil.Companion.emailOfLoggedInUser
 import com.fasterxml.jackson.databind.ObjectMapper
 import eu.jrie.jetbrains.kotlinshell.shell.shell
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -39,7 +38,7 @@ class CaffService(
         return IdResponseDto(
             commentRepository.save(
                 Comment(
-                    caffId = caffId, creator = emailOfLoggedInUser(), content = body
+                    caffId = caffId, creator = userService.currentUser().email, content = body
                 )
             ).id
         )
@@ -95,7 +94,7 @@ class CaffService(
         val id = processIncomingCaff(
             file.inputStream.readAllBytes(),
             title,
-            emailOfLoggedInUser()!!,
+            userService.currentUser().email,
         )
         return IdResponseDto(id)
     }

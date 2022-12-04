@@ -175,7 +175,8 @@ paths:
                 $ref: '#/components/schemas/CaffDto'
         #401:
         #403:
-        #404:
+        404:
+          description: Not found
       tags:
         - caff-file
     delete:
