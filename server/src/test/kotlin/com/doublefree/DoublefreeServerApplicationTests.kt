@@ -168,26 +168,6 @@ class DoublefreeServerApplicationTests {
 
 	@Test
 	@WithMockUser(username = "hellothere", password = "password", roles = ["USER"])
-	fun purchaseCaffAsRegularUser(){
-		val id = insertSampleCaff()
-
-		mockMvc
-			.perform(post("/api/caff-files/$id/purchase"))
-			.andExpect(status().isCreated)
-	}
-
-	@Test
-	@WithMockUser(username = "hellothere", password = "password", roles = ["USER"])
-	fun downloadCaffAsRegularUser(){
-		val id = insertSampleCaff()
-
-		mockMvc
-			.perform(get("/api/caff-files/$id/download"))
-			.andExpect(status().isOk)
-	}
-
-	@Test
-	@WithMockUser(username = "hellothere", password = "password", roles = ["USER"])
 	fun deleteCaffAsRegularUser(){
 		val id = insertSampleCaff()
 
@@ -217,18 +197,6 @@ class DoublefreeServerApplicationTests {
 			.perform(get("/api/caff-files/$id/comments"))
 			.andExpect(status().isOk)
 			.andExpect(content().json("[]"))
-	}
-
-	@Test
-	@WithMockUser(username = "hellothere", password = "password", roles = ["USER"])
-	fun commentAsRegularUser(){
-		val id = insertSampleCaff()
-
-		mockMvc
-			.perform(post("/api/caff-files/$id/comments")
-				.contentType(MediaType.APPLICATION_JSON)
-				.content("{ \"content\": \"text\" }"))
-			.andExpect(status().isCreated)
 	}
 
 	@Test
