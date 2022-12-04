@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service
 import java.io.File
 import java.io.IOException
 import java.time.ZoneOffset
+import javax.transaction.Transactional
 
 @Service
 class CaffService(
@@ -43,8 +44,11 @@ class CaffService(
         )
     }
 
+    @Transactional
     @OptIn(ExperimentalCoroutinesApi::class)
     fun deleteCaffFile(id: Long) {
+        commentRepository.deleteAllByCaffId(id)
+        purchaseTokenRepository.deleteAllByCaffId(id)
         caffRepository.deleteById(id)
         shell {
             file("uploads/raw/$id.caff").delete()
@@ -85,6 +89,7 @@ class CaffService(
         caffRepository.save(found)
     }
 
+    @Transactional
     fun create(title: String, file: Resource): IdResponseDto {
         val id = processIncomingCaff(
             file.inputStream.readAllBytes(),

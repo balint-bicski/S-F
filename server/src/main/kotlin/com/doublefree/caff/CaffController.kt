@@ -35,7 +35,7 @@ class CaffController(
 
     @PreAuthorize("hasAuthority(T(com.doublefree.api.model.Authority).DELETE_NOTE)")
     override fun deleteComment(id: Long, commentId: Long): ResponseEntity<Unit> {
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(caffService.deleteComment(id))
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(caffService.deleteComment(commentId))
     }
 
     @PreAuthorize("hasAuthority(T(com.doublefree.api.model.Authority).DOWNLOAD_CAFF)")

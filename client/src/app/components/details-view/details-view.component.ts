@@ -7,6 +7,7 @@ import {TitleEditDialogComponent} from "./title-edit-dialog.component";
 import {MatDialog} from "@angular/material/dialog";
 import {AuthService} from "../../services/auth.service";
 import {timestampPrettyPrint, toSafeUrl} from "../../util/encoding.util";
+import {ConfirmDialogComponent} from "./confirm-dialog.component";
 
 @Component({
   selector: 'app-details-view',
@@ -32,23 +33,11 @@ export class DetailsViewComponent {
     private route: ActivatedRoute,
     private sanitizer: DomSanitizer,
     private caffService: CaffFileService,
-    private editDialog: MatDialog,
+    private dialog: MatDialog,
     private authService: AuthService
   ) {
     this.loadCaffDetails();
     this.decideUserPermissions();
-    // TODO Temp values until backend is working
-    /*this.caff = {
-      ciffCount: 2,
-      createdDate: "2022-11-22",
-      creator: "Attila",
-      id: 0,
-      preview: undefined,
-      size: 128256,
-      title: "The CAFF that doesn't exist",
-      uploader: "xXx_attila_xXx"
-    };
-    this.caffPreview = "https://picsum.photos/300/200";*/
   }
 
   onBackButtonClicked() {
@@ -57,6 +46,35 @@ export class DetailsViewComponent {
 
   onPurchaseButtonClicked() {
     this.router.navigate(['/details/' + this.caff.id + '/purchase']);
+  }
+
+  onEditTitleButtonClicked() {
+    const dialogRef = this.dialog.open(TitleEditDialogComponent, {
+      data: {caffId: this.caff.id, originalTitle: this.caff.title},
+    });
+    dialogRef.afterClosed().subscribe(successModification => {
+      if (successModification) {
+        this.loadCaffDetails();
+        this.snackBar.success("The CAFF file title has been successfully edited")
+      }
+    });
+  }
+
+  onDeleteFileButtonClicked() {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      data: {title: "Are you sure you'd like to delete the CAFF?"},
+    });
+    dialogRef.afterClosed().subscribe(successModification => {
+      if (successModification) {
+        this.caffService.deleteCaffFile(this.caff.id).subscribe({
+          next: () => {
+            this.router.navigate(['/']);
+            this.snackBar.success("CAFF file has been deleted");
+          },
+          error: () => this.snackBar.error("Could not delete file! Make sure you have the proper permissions to do so!")
+        });
+      }
+    });
   }
 
   // Retrieves the CAFF to display from the server.
@@ -83,21 +101,8 @@ export class DetailsViewComponent {
 
   // Decides whether the user is an admin currently or not
   private decideUserPermissions() {
-    this.showPurchaseButton = this.authService.isUserLoggedIn && this.authService.hasAuthority(Authority.Payment);
-    this.showTitleEditButton = this.authService.isUserLoggedIn && this.authService.hasAuthority(Authority.ModifyCaff);
-    this.showDeleteButton = this.authService.isUserLoggedIn && this.authService.hasAuthority(Authority.DeleteCaff);
-  }
-
-  onEditTitleButtonClicked() {
-    let ref = this.editDialog.open(TitleEditDialogComponent);
-    ref.componentInstance.caffId = this.caff.id;
-    ref.componentInstance.originalTitle = this.caff.title;
-  }
-
-  onDeleteFileButtonClicked() {
-    this.caffService.deleteCaffFile(this.caff.id).subscribe({
-      next: () => this.router.navigate(['/']),
-      error: () => this.snackBar.error("Could not delete file! Make sure you have the proper permissions to do so!")
-    });
+    this.showPurchaseButton = this.authService.hasRightToAccess(Authority.Payment);
+    this.showTitleEditButton = this.authService.hasRightToAccess(Authority.ModifyCaff);
+    this.showDeleteButton = this.authService.hasRightToAccess(Authority.DeleteCaff);
   }
 }

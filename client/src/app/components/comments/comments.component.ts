@@ -1,9 +1,11 @@
 import {Component, Input} from "@angular/core";
 import {Authority, CaffFileService, CommentDto} from "../../../../target/generated-sources";
 import {SnackBarService} from "../../services/snack-bar.service";
-import {FormControl} from "@angular/forms";
+import {FormControl, Validators} from "@angular/forms";
 import {AuthService} from "../../services/auth.service";
 import {timestampPrettyPrint} from "../../util/encoding.util";
+import {MatDialog} from "@angular/material/dialog";
+import {ConfirmDialogComponent} from "../details-view/confirm-dialog.component";
 
 @Component({
   selector: 'app-comments',
@@ -11,7 +13,7 @@ import {timestampPrettyPrint} from "../../util/encoding.util";
 })
 export class CommentsComponent {
 
-  noteControl = new FormControl("");
+  noteControl = new FormControl("", [Validators.required]);
   comments: Array<CommentDto> = [];
 
   // User permissions for conditional formatting.
@@ -21,7 +23,8 @@ export class CommentsComponent {
   constructor(
     private snackBar: SnackBarService,
     private caffService: CaffFileService,
-    private authService: AuthService
+    private authService: AuthService,
+    private dialog: MatDialog,
   ) {
     this.decideUserPermissions();
   }
@@ -51,20 +54,28 @@ export class CommentsComponent {
       next: () => {
         this.noteControl.reset();
         this.loadComments();
+        this.snackBar.success("Comment has been successfully created");
       },
       error: () => this.snackBar.error("Comment could not be added!")
     });
   }
 
   deleteComment(commentId: number) {
-    this.caffService.deleteComment(this._caffId, commentId).subscribe({
-      next: () => this.loadComments(),
-      error: () => this.snackBar.error("Comment could not be removed!")
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      data: {title: "Are you sure you'd like to delete the comment?"},
+    });
+    dialogRef.afterClosed().subscribe(successModification => {
+      if (successModification) {
+        this.caffService.deleteComment(this._caffId, commentId).subscribe({
+          next: () => this.loadComments(),
+          error: () => this.snackBar.error("Comment could not be removed!")
+        });
+      }
     });
   }
 
   private decideUserPermissions() {
-    this.showSubmitButton = this.authService.isUserLoggedIn && this.authService.hasAuthority(Authority.WriteNote);
-    this.showDeleteButtons = this.authService.isUserLoggedIn && this.authService.hasAuthority(Authority.DeleteNote);
+    this.showSubmitButton = this.authService.hasRightToAccess(Authority.WriteNote);
+    this.showDeleteButtons = this.authService.hasRightToAccess(Authority.DeleteNote);
   }
 }

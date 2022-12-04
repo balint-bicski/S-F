@@ -32,15 +32,6 @@ export class DashboardComponent implements OnInit {
     private authService: AuthService,
     private caffService: CaffFileService
   ) {
-    // TODO Temporary until backend is working
-    /*    this.caffs = [
-          {id: 0, title: "You are", preview: "", previewImage: "https://picsum.photos/300/200"},
-          {id: 1, title: "My fire", preview: "", previewImage: "https://picsum.photos/300/200"},
-          {id: 2, title: "The one", preview: "", previewImage: "https://picsum.photos/300/200"},
-          {id: 3, title: "Desire", preview: "", previewImage: "https://picsum.photos/300/200"},
-          {id: 4, title: "Believe when I say", preview: "", previewImage: "https://picsum.photos/300/200"},
-          {id: 5, title: "I want it that way", preview: "", previewImage: "https://picsum.photos/300/200"},
-        ];*/
   }
 
   ngOnInit() {
@@ -52,7 +43,7 @@ export class DashboardComponent implements OnInit {
       error: () => this.snackBar.error("Could not load CAFF files! The server probably can't be reached!")
     });
 
-    this.showUploadButton = this.authService.isUserLoggedIn && this.authService.hasAuthority(Authority.UploadCaff);
+    this.showUploadButton = this.authService.hasRightToAccess(Authority.UploadCaff);
   }
 
   // Redirects when a card was clicked.

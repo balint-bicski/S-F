@@ -24,7 +24,10 @@ export class PaymentComponent implements OnInit {
   }
 
   onPurchase() {
-    this.caffService.purchaseCaffFile(this.caffId).subscribe(result => this.token = result.token);
+    this.caffService.purchaseCaffFile(this.caffId).subscribe(result => {
+      this.token = result.token;
+      this.snackBar.success("CAFF file has been purchased");
+    });
   }
 
   onDownload() {
@@ -39,6 +42,7 @@ export class PaymentComponent implements OnInit {
         link.click();
 
         this.router.navigate(['/details/' + this.caffId]);
+        this.snackBar.success("CAFF file is successfully downloaded");
       },
       error: () => this.snackBar.error("Could not verify payment with server!")
     });

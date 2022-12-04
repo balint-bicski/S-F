@@ -2,13 +2,14 @@
 
 <!-- Title input -->
 <mat-form-field style="width: 100%;">
-  <input matInput type="text" placeholder="Enter new title" #titleInput value="{{originalTitle}}">
+  <input #titleInput matInput placeholder="Enter new title" type="text" value="{{data.originalTitle}}">
 </mat-form-field>
 
 <!-- Action buttons -->
 <div mat-dialog-actions>
-  <button mat-raised-button mat-dialog-close="false">Cancel</button>
-  <button mat-raised-button color="primary" mat-dialog-close="true" class="ms-auto"
-          [disabled]="titleInput.value.length === 0"
-          (click)="saveNameChange(titleInput.value)">Save</button>
+  <button (click)="closeDialog(false)" mat-raised-button>Cancel</button>
+  <button (click)="saveNameChange(titleInput.value)" [disabled]="titleInput.value.length === 0" class="ms-auto"
+          color="primary" mat-raised-button>
+    Save
+  </button>
 </div>

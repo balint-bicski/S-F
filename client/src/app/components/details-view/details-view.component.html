@@ -11,7 +11,8 @@
       <div class="row">
         <!-- Preview image -->
         <div class="col-12 col-md-7 text-center">
-          <img alt="CAFF preview image" [src]="caffPreview | async" style="object-fit: cover; width: auto; height: 25em;">
+          <img [src]="caffPreview | async" alt="CAFF preview image"
+               style="object-fit: cover; width: auto; height: 25em;">
         </div>
 
         <!-- Details table -->
@@ -36,21 +37,21 @@
                 Back
               </button>
             </div>
-            <div class="col-6" *ngIf="showPurchaseButton">
+            <div *ngIf="showPurchaseButton" class="col-6">
               <button (click)="onPurchaseButtonClicked()" class="w-100" color="primary" mat-raised-button>
                 Purchase
               </button>
             </div>
           </div>
           <div class="row mt-3">
-            <div class="col-6" *ngIf="showTitleEditButton">
-              <button (click)="onEditTitleButtonClicked()" mat-raised-button class="w-100" color="accent">
-                Admin: Edit title
+            <div *ngIf="showTitleEditButton" class="col-6">
+              <button (click)="onEditTitleButtonClicked()" class="w-100" color="accent" mat-raised-button>
+                Edit title
               </button>
             </div>
-            <div class="col-6" *ngIf="showDeleteButton">
-              <button (click)="onDeleteFileButtonClicked()" mat-raised-button class="w-100" color="accent">
-                Admin: Delete file
+            <div *ngIf="showDeleteButton" class="col-6">
+              <button (click)="onDeleteFileButtonClicked()" class="w-100" color="warn" mat-raised-button>
+                Delete file
               </button>
             </div>
           </div>
