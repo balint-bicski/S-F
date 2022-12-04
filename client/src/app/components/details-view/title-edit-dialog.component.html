@@ -1,0 +1,15 @@
+<h1 mat-dialog-title>Edit title</h1>
+
+<!-- Title input -->
+<mat-form-field style="width: 100%;">
+  <input #titleInput matInput placeholder="Enter new title" type="text" value="{{data.originalTitle}}">
+</mat-form-field>
+
+<!-- Action buttons -->
+<div mat-dialog-actions>
+  <button (click)="closeDialog(false)" mat-raised-button>Cancel</button>
+  <button (click)="saveNameChange(titleInput.value)" [disabled]="titleInput.value.length === 0" class="ms-auto"
+          color="primary" mat-raised-button>
+    Save
+  </button>
+</div>

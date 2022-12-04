@@ -29,6 +29,10 @@ export class AuthService {
     return this.currentUser !== null;
   }
 
+  hasRightToAccess(authority: Authority): boolean {
+    return this.isUserLoggedIn && this.hasAuthority(authority);
+  }
+
   authenticate(email, password): Observable<UserDto> {
     return this.authenticationService.login({email, password})
     .pipe(
@@ -50,9 +54,5 @@ export class AuthService {
 
   hasAuthority(authority?: Authority): boolean {
     return !authority || this.getToken().authorities.includes(authority);
-  }
-
-  authorities(): string {
-    return this.getToken().authorities.join(', ');
   }
 }

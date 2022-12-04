@@ -1,17 +1,21 @@
-<header *ngIf="authService.isUserLoggedIn">
+<header>
   <mat-toolbar color="primary">
     <mat-toolbar-row>
       <h1 class="mx-2" fxShow="true" routerLink="/">_DoubleFree</h1>
-      <div fxLayout="row" fxLayoutAlign="space-between" class="w-100">
+      <div class="w-100" fxLayout="row" fxLayoutAlign="space-between">
         <div>
           <ng-container *ngFor="let item of menu">
-            <a *ngIf="hasRightToAccess(item.authority)" [routerLink]="[item.route]" class="mx-2 menu-item" mat-button>
-              {{item.label}}
+            <a *ngIf="authService.hasRightToAccess(item.authority)" [routerLink]="[item.route]" class="mx-2 menu-item"
+               mat-button>{{item.label}}
             </a>
           </ng-container>
         </div>
-        <a class="mx-2 menu-item" mat-button matTooltip="Logout" routerLink="/logout">
+        <a *ngIf="authService.isUserLoggedIn" class="mx-2 menu-item" mat-button matTooltip="Logout"
+           routerLink="/logout">
           <mat-icon>exit_to_app</mat-icon>
+        </a>
+        <a *ngIf="!authService.isUserLoggedIn" class="mx-2 menu-item" mat-button matTooltip="Login" routerLink="/login">
+          Login
         </a>
       </div>
     </mat-toolbar-row>

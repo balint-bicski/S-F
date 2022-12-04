@@ -30,6 +30,8 @@ import {CommentsComponent} from "./components/comments/comments.component";
 import {PaymentComponent} from "./components/payment/payment.component";
 import {UploadDialogComponent} from "./components/dashboard/upload-dialog.component";
 import {MatDialogModule} from "@angular/material/dialog";
+import {TitleEditDialogComponent} from "./components/details-view/title-edit-dialog.component";
+import {ConfirmDialogComponent} from "./components/details-view/confirm-dialog.component";
 
 @NgModule({
   declarations: [
@@ -41,6 +43,8 @@ import {MatDialogModule} from "@angular/material/dialog";
     DashboardComponent,
     UploadDialogComponent,
     DetailsViewComponent,
+    TitleEditDialogComponent,
+    ConfirmDialogComponent,
     PaymentComponent,
     CommentsComponent,
     UserListComponent

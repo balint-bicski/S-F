@@ -14,7 +14,8 @@ export class UploadDialogComponent {
     private snackBar: SnackBarService,
     private router: Router,
     private caffService: CaffFileService
-  ) {}
+  ) {
+  }
 
   uploadFile(title: string) {
     if (!this.file) {
@@ -22,13 +23,16 @@ export class UploadDialogComponent {
       return;
     }
 
-    this.caffService.createCaffFile({ file: this.file, title: title }).subscribe({
-      next: response => this.router.navigate(['/details/' + response.id]),
+    this.caffService.createCaffFile(title, this.file).subscribe({
+      next: response => {
+        this.router.navigate(['/details/' + response.id]);
+        this.snackBar.success("New CAFF file has been created");
+      },
       error: () => this.snackBar.error("Could not create new CAFF file, please try again!")
     })
   }
 
   onFileSelected(event: Event) {
-    this.file = (<HTMLInputElement> event.target).files[0];
+    this.file = (<HTMLInputElement>event.target).files[0];
   }
 }

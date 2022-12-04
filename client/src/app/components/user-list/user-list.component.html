@@ -19,8 +19,8 @@
       <ng-container matColumnDef="action">
         <mat-header-cell *matHeaderCellDef>Action</mat-header-cell>
         <mat-cell *matCellDef="let user">
-          <button (click)="deleteUser(user.id)" [disabled]="user.role === 'ADMINISTRATOR'" color="warn" mat-mini-fab
-                  matTooltip="Delete user">
+          <button (click)="deleteUser(user.id)" *ngIf="hasDeleteRight()" [disabled]="deleteDisabled(user)" color="warn"
+                  mat-mini-fab matTooltip="Delete user">
             <mat-icon>delete</mat-icon>
           </button>
         </mat-cell>

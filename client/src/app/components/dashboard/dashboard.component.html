@@ -4,24 +4,24 @@
     <div class="col-9 col-md-11">
       <mat-card>
         <mat-form-field style="width: 100%;">
-          <input matInput type="text" [(ngModel)]="filterText" (ngModelChange)="onFilterChanged()"
-                 placeholder="Type here to filter by title..." style="width: 100%;">
+          <input [(ngModel)]="filterText" (ngModelChange)="onFilterChanged()" matInput placeholder="Type here to filter by title..."
+                 style="width: 100%;" type="text">
         </mat-form-field>
       </mat-card>
     </div>
 
-    <div class="col-3 col-md-1 my-auto">
-      <button mat-raised-button color="primary" class="w-100" (click)="onUploadButtonClicked()">Upload</button>
+    <div class="col-3 col-md-1 my-auto" *ngIf="showUploadButton">
+      <button (click)="onUploadButtonClicked()" class="w-100" color="primary" mat-raised-button>Upload</button>
     </div>
   </div>
 
   <!-- CAFF list -->
   <div class="row mt-2">
-    <div class="col-12 col-md-4 my-2" *ngFor="let caff of filteredCaffs">
+    <div *ngFor="let caff of filteredCaffs" class="col-12 col-md-4 my-2">
       <mat-card (click)="onListElementClicked(caff.id)">
         <mat-card-title>{{caff.title}}</mat-card-title>
-        <img mat-card-image class="mt-2 px-3" alt="CAFF preview image"
-             src="{{caff.previewImage}}">
+        <img alt="CAFF preview image" class="mt-2 px-3" mat-card-image
+             [src]="caff.previewImage | async">
       </mat-card>
     </div>
   </div>

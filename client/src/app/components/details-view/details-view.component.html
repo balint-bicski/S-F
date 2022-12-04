@@ -3,7 +3,7 @@
   <mat-card>
     <!-- Card title -->
     <mat-card-header>
-      <mat-card-title>{{caff.title}}</mat-card-title>
+      <mat-card-title>{{caff?.title}}</mat-card-title>
     </mat-card-header>
 
     <!-- Card body -->
@@ -11,34 +11,47 @@
       <div class="row">
         <!-- Preview image -->
         <div class="col-12 col-md-7 text-center">
-          <img src="{{caffPreview}}" alt="CAFF preview image" style="object-fit: cover; width: auto; height: 25em;">
+          <img [src]="caffPreview | async" alt="CAFF preview image"
+               style="object-fit: cover; width: auto; height: 25em;">
         </div>
 
         <!-- Details table -->
         <div class="col-12 col-md-5">
-          <table mat-table [dataSource]="detailsData" style="width: 100%;">
+          <mat-table [dataSource]="detailsData" style="width: 100%;">
             <ng-container matColumnDef="key">
-              <th mat-header-cell *matHeaderCellDef></th>
-              <td mat-cell *matCellDef="let element">{{element.key}}</td>
+              <mat-header-cell *matHeaderCellDef></mat-header-cell>
+              <mat-cell *matCellDef="let element">{{element.key}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="value">
-              <th mat-header-cell *matHeaderCellDef></th>
-              <td mat-cell *matCellDef="let element">{{element.value}}</td>
+              <mat-header-cell *matHeaderCellDef></mat-header-cell>
+              <mat-cell *matCellDef="let element">{{element.value}}</mat-cell>
             </ng-container>
 
-            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-          </table>
+            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+          </mat-table>
 
           <div class="row mt-3">
             <div class="col-6">
-              <button mat-raised-button class="w-100" (click)="onBackButtonClicked()">
+              <button (click)="onBackButtonClicked()" class="w-100" mat-raised-button>
                 Back
               </button>
             </div>
-            <div class="col-6">
-              <button mat-raised-button color="primary" class="w-100" (click)="onPurchaseButtonClicked()">
+            <div *ngIf="showPurchaseButton" class="col-6">
+              <button (click)="onPurchaseButtonClicked()" class="w-100" color="primary" mat-raised-button>
                 Purchase
+              </button>
+            </div>
+          </div>
+          <div class="row mt-3">
+            <div *ngIf="showTitleEditButton" class="col-6">
+              <button (click)="onEditTitleButtonClicked()" class="w-100" color="accent" mat-raised-button>
+                Edit title
+              </button>
+            </div>
+            <div *ngIf="showDeleteButton" class="col-6">
+              <button (click)="onDeleteFileButtonClicked()" class="w-100" color="warn" mat-raised-button>
+                Delete file
               </button>
             </div>
           </div>
@@ -48,5 +61,5 @@
   </mat-card>
 
   <!-- Comments-->
-  <app-comments [caffId]="caff.id"></app-comments>
+  <app-comments [caffId]="caff?.id"></app-comments>
 </div>

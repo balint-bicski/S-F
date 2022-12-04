@@ -9,8 +9,9 @@ spring:
     password: ${DB_PASSWORD:}
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: create
     open-in-view: false         # https://vladmihalcea.com/the-open-session-in-view-anti-pattern/
+  servlet.multipart.max-file-size: 50MB
 
 security:
   secretKey: Ind9kl8W988w9OfxqZafuzltmjGYoi6qQn49+37YAHw=

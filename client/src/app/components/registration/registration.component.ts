@@ -30,7 +30,10 @@ export class RegistrationComponent extends FormBaseComponent implements OnInit {
   }
 
   register(): void {
-    this.authenticationService.register(this.userForm.getRawValue()).subscribe({
+    this.authenticationService.register({
+      email: this.userForm.get("email").value,
+      password: this.userForm.get("password").value
+    }).subscribe({
       next: () => {
         this.router.navigate(['']);
         this.snackBar.success('Registration was successful');
