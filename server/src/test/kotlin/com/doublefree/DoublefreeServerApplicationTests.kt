@@ -1,14 +1,14 @@
 package com.doublefree
 
-import com.doublefree.authentication.Role
+import com.doublefree.caff.Caff
+import com.doublefree.caff.CaffRepository
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
 import org.springframework.security.test.context.support.WithMockUser
-import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
@@ -16,12 +16,26 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import java.time.OffsetDateTime
 
 @SpringBootTest
 @AutoConfigureMockMvc
 class DoublefreeServerApplicationTests {
 	@Autowired
 	lateinit var mockMvc: MockMvc
+
+	@Autowired
+	lateinit var caffRepository: CaffRepository
+
+	@OptIn(ExperimentalCoroutinesApi::class)
+	private fun insertSampleCaff(): Long {
+		val id = caffRepository.save(Caff(
+			id = 0, creator = "Creator", uploader = "Uploader", createdDate = OffsetDateTime.now(),
+			ciffCount = 2, size = 2_000_000, title = "CAFF title"
+		)).id!!
+
+		return id
+	}
 
 	@Test
 	fun contextLoads() { }
@@ -31,6 +45,8 @@ class DoublefreeServerApplicationTests {
 	//
 	@Test
 	fun caffListWithoutAuthentication() {
+		caffRepository.deleteAll()
+
 		mockMvc
 			.perform(get("/api/caff-files"))
 			.andExpect(status().isOk)
@@ -39,11 +55,12 @@ class DoublefreeServerApplicationTests {
 
 	@Test
 	fun caffDetailsWithoutAuthentication(){
-		//TODO valid caff
+		val id = insertSampleCaff()
+
 		mockMvc
-		.perform(get("/api/caff-files/{id}", 1))
+		.perform(get("/api/caff-files/$id"))
 			.andExpect(status().isOk)
-			.andExpect(content().json("[]"))
+			.andExpect(content().contentType(MediaType.APPLICATION_JSON))
 	}
 
 	@Test
@@ -57,30 +74,37 @@ class DoublefreeServerApplicationTests {
 
 	@Test
 	fun purchaseCaffWithoutAuthentication(){
+		val id = insertSampleCaff()
+
 		mockMvc
-			.perform(post("/api/caff-files/{id}/purchase", 1))
+			.perform(post("/api/caff-files/$id/purchase"))
 			.andExpect(status().isUnauthorized)
 	}
 
 	@Test
 	fun downloadCaffWithoutAuthentication(){
+		val id = insertSampleCaff()
+
 		mockMvc
-			.perform(get("/api/caff-files/{id}/download", 1))
+			.perform(get("/api/caff-files/$id/download"))
 			.andExpect(status().isUnauthorized)
 	}
 
 	@Test
 	fun deleteCaffWithoutAuthentication(){
+		val id = insertSampleCaff()
+
 		mockMvc
-			.perform(delete("/api/caff-files/{id}", 1))
+			.perform(delete("/api/caff-files/$id"))
 			.andExpect(status().isUnauthorized)
 	}
 
 	@Test
 	fun changeTitleWithoutAuthentication(){
-		//TODO valid CAFF
+		val id = insertSampleCaff()
+
 		mockMvc
-			.perform(put("/api/caff-files/{id}", 1)
+			.perform(put("/api/caff-files/$id")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content("{}"))
 			.andExpect(status().isUnauthorized)
@@ -88,17 +112,20 @@ class DoublefreeServerApplicationTests {
 
 	@Test
 	fun loadCommentsWithoutAuthentication() {
-		//TODO valid CAFF + valid comments
+		val id = insertSampleCaff()
+
 		mockMvc
-			.perform(get("/api/caff-files/{id}/comments", 1))
+			.perform(get("/api/caff-files/$id/comments"))
 			.andExpect(status().isOk)
 			.andExpect(content().json("[]"))
 	}
 
 	@Test
 	fun commentWithoutAuthentication(){
+		val id = insertSampleCaff()
+
 		mockMvc
-			.perform(post("/api/caff-files/{id}/comments", 1)
+			.perform(post("/api/caff-files/$id/comments")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(""))
 			.andExpect(status().is4xxClientError)
@@ -106,8 +133,10 @@ class DoublefreeServerApplicationTests {
 
 	@Test
 	fun deleteCommentWithoutAuthentication(){
+		val id = insertSampleCaff()
+
 		mockMvc
-			.perform(delete("/api/caff-files/{id}/comments/{commentId}", 1, 1))
+			.perform(delete("/api/caff-files/$id/comments/{commentId}", 1))
 			.andExpect(status().isUnauthorized)
 	}
 
@@ -118,6 +147,8 @@ class DoublefreeServerApplicationTests {
 	@Test
 	@WithMockUser(username = "hellothere", password = "password", roles = ["USER"])
 	fun caffListAsRegularUser() {
+		caffRepository.deleteAll()
+
 		mockMvc
 			.perform(get("/api/caff-files"))
 			.andExpect(status().isOk)
@@ -127,55 +158,51 @@ class DoublefreeServerApplicationTests {
 	@Test
 	@WithMockUser(username = "hellothere", password = "password", roles = ["USER"])
 	fun caffDetailsAsRegularUser(){
-		//TODO valid caff
-		mockMvc
-			.perform(get("/api/caff-files/{id}", 1))
-			.andExpect(status().isOk)
-			.andExpect(content().json("[]"))
-	}
+		val id = insertSampleCaff()
 
-	@Test
-	@WithMockUser(username = "hellothere", password = "password", roles = ["USER"])
-	fun uploadCaffAsRegularUser(){
-		//TODO valid caff
 		mockMvc
-			.perform(post("/api/caff-files")
-				.param("title", "test title")
-				.content(ByteArray(20000)))
-			.andExpect(status().isCreated)
+			.perform(get("/api/caff-files/$id"))
+			.andExpect(status().isOk)
+			.andExpect(content().contentType(MediaType.APPLICATION_JSON))
 	}
 
 	@Test
 	@WithMockUser(username = "hellothere", password = "password", roles = ["USER"])
 	fun purchaseCaffAsRegularUser(){
+		val id = insertSampleCaff()
+
 		mockMvc
-			.perform(post("/api/caff-files/{id}/purchase", 1))
+			.perform(post("/api/caff-files/$id/purchase"))
 			.andExpect(status().isCreated)
 	}
 
 	@Test
 	@WithMockUser(username = "hellothere", password = "password", roles = ["USER"])
 	fun downloadCaffAsRegularUser(){
-		//TODO valid caff
+		val id = insertSampleCaff()
+
 		mockMvc
-			.perform(get("/api/caff-files/{id}/download", 1))
+			.perform(get("/api/caff-files/$id/download"))
 			.andExpect(status().isOk)
 	}
 
 	@Test
 	@WithMockUser(username = "hellothere", password = "password", roles = ["USER"])
 	fun deleteCaffAsRegularUser(){
+		val id = insertSampleCaff()
+
 		mockMvc
-			.perform(delete("/api/caff-files/{id}", 1))
+			.perform(delete("/api/caff-files/$id"))
 			.andExpect(status().isForbidden)
 	}
 
 	@Test
 	@WithMockUser(username = "hellothere", password = "password", roles = ["USER"])
 	fun changeTitleAsRegularUser(){
-		//TODO valid CAFF
+		val id = insertSampleCaff()
+
 		mockMvc
-			.perform(put("/api/caff-files/{id}", 1)
+			.perform(put("/api/caff-files/$id")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content("{}"))
 			.andExpect(status().isForbidden)
@@ -184,9 +211,10 @@ class DoublefreeServerApplicationTests {
 	@Test
 	@WithMockUser(username = "hellothere", password = "password", roles = ["USER"])
 	fun loadCommentsAsRegularUser() {
-		//TODO valid CAFF + valid comments
+		val id = insertSampleCaff()
+
 		mockMvc
-			.perform(get("/api/caff-files/{id}/comments", 1))
+			.perform(get("/api/caff-files/$id/comments"))
 			.andExpect(status().isOk)
 			.andExpect(content().json("[]"))
 	}
@@ -194,18 +222,22 @@ class DoublefreeServerApplicationTests {
 	@Test
 	@WithMockUser(username = "hellothere", password = "password", roles = ["USER"])
 	fun commentAsRegularUser(){
+		val id = insertSampleCaff()
+
 		mockMvc
-			.perform(post("/api/caff-files/{id}/comments", 1)
+			.perform(post("/api/caff-files/$id/comments")
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(""))
+				.content("{ \"content\": \"text\" }"))
 			.andExpect(status().isCreated)
 	}
 
 	@Test
 	@WithMockUser(username = "hellothere", password = "password", roles = ["USER"])
 	fun deleteCommentAsRegularUser(){
+		val id = insertSampleCaff()
+
 		mockMvc
-			.perform(delete("/api/caff-files/{id}/comments/{commentId}", 1, 1))
+			.perform(delete("/api/caff-files/$id/comments/{commentId}", 1))
 			.andExpect(status().isForbidden)
 	}
 
@@ -224,22 +256,6 @@ class DoublefreeServerApplicationTests {
 			.andExpect(status().isNotFound)
 	}
 
-	@Test
-	fun uploadAsNonExistingUser(){
-		throw NotImplementedError()
-	}
-
-	@Test
-	fun commentAsNonExistingUser(){
-		throw NotImplementedError()
-	}
-
-	@Test
-	@WithMockUser(username = "general_kenobi", password = "password", roles = ["ADMINISTRATOR"])
-	fun updateTitleOnNonExistingCaff(){
-		throw NotImplementedError()
-	}
-
 	//
 	//Malformed entities
 	//
@@ -251,11 +267,6 @@ class DoublefreeServerApplicationTests {
 				.param("title", "test title")
 				.contentType(MediaType.MULTIPART_FORM_DATA)
 				.content(ByteArray(20000)))
-			.andExpect(status().isUnprocessableEntity)
-	}
-
-	@Test
-	fun createEmptyComment(){
-		throw NotImplementedError()
+			.andExpect(status().is4xxClientError)
 	}
 }
