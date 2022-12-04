@@ -15,17 +15,26 @@ class CaffController(
 
     @PreAuthorize("hasAuthority(T(com.doublefree.api.model.Authority).UPLOAD_CAFF)")
     override fun createCaffFile(title: String, file: Resource): ResponseEntity<IdResponseDto> {
-        val response = caffService.create(title, file)
-        return if(response.id == null) {
-            ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).build()
-        } else {
-            ResponseEntity.status(HttpStatus.CREATED).body(response)
+        return try {
+            val response = caffService.create(title, file)
+            if (response.id == null) {
+                ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).build()
+            } else {
+                ResponseEntity.status(HttpStatus.CREATED).body(response)
+            }
+        } catch (e: Exception) {
+            ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
         }
     }
 
     @PreAuthorize("hasAuthority(T(com.doublefree.api.model.Authority).WRITE_NOTE)")
     override fun createComment(id: Long, body: String): ResponseEntity<IdResponseDto> {
-        return ResponseEntity.status(HttpStatus.CREATED).body(caffService.createComment(id, body))
+        return try {
+            val response = caffService.createComment(id, body)
+            ResponseEntity.status(HttpStatus.CREATED).body(response)
+        } catch (e: Exception) {
+            ResponseEntity.status(HttpStatus.BAD_REQUEST).build()
+        }
     }
 
     @PreAuthorize("hasAuthority(T(com.doublefree.api.model.Authority).DELETE_CAFF)")
@@ -40,11 +49,17 @@ class CaffController(
 
     @PreAuthorize("hasAuthority(T(com.doublefree.api.model.Authority).DOWNLOAD_CAFF)")
     override fun downloadCaffFile(id: Long, token: String): ResponseEntity<Resource> {
-        return ResponseEntity.ok(caffService.downloadCaffFile(id))
+        return try {
+            val resource = caffService.downloadCaffFile(id)
+            ResponseEntity.ok(resource)
+        } catch (e: Exception) {
+            ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
+        }
     }
 
     override fun getCaffFile(id: Long): ResponseEntity<CaffDto> {
-        return ResponseEntity.ok(caffService.getCaffDetails(id))
+        val caff = caffService.getCaffDetails(id) ?: return ResponseEntity.status(HttpStatus.NOT_FOUND).build()
+        return ResponseEntity.ok(caff)
     }
 
     override fun getComments(id: Long): ResponseEntity<List<CommentDto>> {
@@ -53,7 +68,11 @@ class CaffController(
 
     @PreAuthorize("hasAuthority(T(com.doublefree.api.model.Authority).PAYMENT)")
     override fun purchaseCaffFile(id: Long): ResponseEntity<PurchaseTokenDto> {
-        return ResponseEntity.ok(caffService.purchaseCaffFile(id))
+        return try {
+            ResponseEntity.ok(caffService.purchaseCaffFile(id))
+        } catch (e: Exception) {
+            ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
+        }
     }
 
     override fun searchCaffFile(title: String?): ResponseEntity<List<CaffSummaryDto>> {
@@ -62,7 +81,11 @@ class CaffController(
 
     @PreAuthorize("hasAuthority(T(com.doublefree.api.model.Authority).MODIFY_CAFF)")
     override fun updateCaffFile(id: Long, body: String): ResponseEntity<Unit> {
-        return ResponseEntity.ok(caffService.updateTitle(id, body))
+        return try {
+            val response = caffService.updateTitle(id, body)
+            ResponseEntity.ok(response)
+        } catch (e: Exception) {
+            ResponseEntity.status(HttpStatus.BAD_REQUEST).build()
+        }
     }
-
 }

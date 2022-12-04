@@ -24,9 +24,14 @@ export class PaymentComponent implements OnInit {
   }
 
   onPurchase() {
-    this.caffService.purchaseCaffFile(this.caffId).subscribe(result => {
-      this.token = result.token;
-      this.snackBar.success("CAFF file has been purchased");
+    this.caffService.purchaseCaffFile(this.caffId).subscribe({
+      next: result => {
+        this.token = result.token;
+        this.snackBar.success("CAFF file has been purchased");
+      },
+      error: () => {
+        this.snackBar.error("Could not purchase CAFF file!");
+      }
     });
   }
 

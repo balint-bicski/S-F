@@ -9,6 +9,7 @@ import eu.jrie.jetbrains.kotlinshell.shell.shell
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.springframework.core.io.InputStreamResource
 import org.springframework.core.io.Resource
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import java.io.File
 import java.io.IOException
@@ -75,8 +76,8 @@ class CaffService(
         return PurchaseTokenDto(token = created.token.toString())
     }
 
-    fun getCaffDetails(id: Long): CaffDto {
-        return caffRepository.findById(id).get().toDto()
+    fun getCaffDetails(id: Long): CaffDto? {
+        return caffRepository.findByIdOrNull(id)?.toDto()
     }
 
     fun searchByTitle(title: String?): List<CaffSummaryDto> {
