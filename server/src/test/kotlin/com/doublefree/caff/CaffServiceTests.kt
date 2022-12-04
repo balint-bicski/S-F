@@ -1,5 +1,7 @@
 package com.doublefree.caff
 
+import com.doublefree.authentication.Role
+import com.doublefree.user.User
 import com.doublefree.user.UserService
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.mockk.*
@@ -27,6 +29,10 @@ class CaffServiceTests {
 
     private val comment = Comment(
         id = 0, caffId = 0, creator = "Creator", createdDate = OffsetDateTime.now(), content = "Sample comment"
+    )
+
+    private val user = User(
+        id = 0, email = "user@test.test", password = "mockmockmockmock", role = Role.USER
     )
 
     @Test
@@ -92,6 +98,7 @@ class CaffServiceTests {
     fun createComment_correct_when_arguments_correct() {
         every { caffRepository.existsById(any())} returns true
         every { commentRepository.save(any()) } returns comment
+        every { userService.currentUser() } returns user.toDto()
 
         assertDoesNotThrow { service.createComment(0, "content") }
 
@@ -124,7 +131,7 @@ class CaffServiceTests {
     fun getCaffDetails_correct_with_no_result() {
         every { caffRepository.findById(any()) } returns Optional.empty()
 
-        assertThrows<NoSuchElementException> { service.getCaffDetails(0) }
+        assertThrows<NullPointerException> { service.getCaffDetails(0)!! }
 
         verify { caffRepository.findById(0) }
     }
@@ -134,6 +141,7 @@ class CaffServiceTests {
         every { caffRepository.findById(any()) } returns Optional.of(caff)
 
         val result = assertDoesNotThrow { service.getCaffDetails(0) }
+        assert(result != null)
 
         verify { caffRepository.findById(0) }
         assert(result?.id == caff.id)
