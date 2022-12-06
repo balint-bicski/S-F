@@ -14,13 +14,15 @@ class User(
     val email: String,
     @Column(nullable = false)
     val password: String,
+    @Column(nullable = true)
+    val bio: String?,
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     val role: Role = Role.USER,
 ) {
     val authorities get() = role.authorities()
 
-    fun toDto() = UserDto(id = id, email = email, role = role.name)
+    fun toDto() = UserDto(id = id, email = email, bio = bio, role = role.name)
 }
 
-fun UserDto.toEntity() = User(id, email, requireNotNull(password))
+fun UserDto.toEntity() = User(id, email, requireNotNull(password), bio)

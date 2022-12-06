@@ -21,6 +21,7 @@ class DevProfileRunner(
             id = 32768,
             email = "admin@user.com",
             password = passwordEncoder.encode("root"),
+            bio = "",
             role = Role.ADMINISTRATOR
         ))
     }

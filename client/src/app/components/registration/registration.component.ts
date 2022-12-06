@@ -32,7 +32,8 @@ export class RegistrationComponent extends FormBaseComponent implements OnInit {
   register(): void {
     this.authenticationService.register({
       email: this.userForm.get("email").value,
-      password: this.userForm.get("password").value
+      password: this.userForm.get("password").value,
+      bio: this.userForm.get("bio").value
     }).subscribe({
       next: () => {
         this.router.navigate(['']);
@@ -49,6 +50,7 @@ export class RegistrationComponent extends FormBaseComponent implements OnInit {
       password: ['', [Validators.required, Validators.minLength(6)]],
       confirmPassword: ['', Validators.required],
       agree: [false, Validators.requiredTrue],
+      bio: [''],
     }, {
       validators: ValidatePasswordConfirmation
     });
