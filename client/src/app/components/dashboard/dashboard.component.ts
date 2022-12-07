@@ -1,14 +1,11 @@
 import {Component, OnInit} from '@angular/core';
 import {AuthService} from "../../services/auth.service";
 import {Authority, CaffFileService, CaffSummaryDto} from "../../../../target/generated-sources";
-import {DomSanitizer, SafeUrl} from "@angular/platform-browser";
+import {DomSanitizer} from "@angular/platform-browser";
 import {Router} from "@angular/router";
 import {MatDialog} from "@angular/material/dialog";
 import {UploadDialogComponent} from "./upload-dialog.component";
 import {SnackBarService} from "../../services/snack-bar.service";
-import {toSafeUrl} from "../../util/encoding.util";
-
-type SummaryWithPreview = CaffSummaryDto & { previewImage: Promise<SafeUrl> };
 
 @Component({
   selector: 'app-dashboard',
@@ -16,9 +13,9 @@ type SummaryWithPreview = CaffSummaryDto & { previewImage: Promise<SafeUrl> };
 })
 export class DashboardComponent implements OnInit {
   // Contains the full list of the caff summaries.
-  caffs: Array<SummaryWithPreview>;
+  caffs: Array<CaffSummaryDto>;
   // Contains a filtered array based on the filter text.
-  filteredCaffs: Array<SummaryWithPreview>;
+  filteredCaffs: Array<CaffSummaryDto>;
   filterText: string;
 
   // User information for conditional element display.
@@ -37,10 +34,10 @@ export class DashboardComponent implements OnInit {
   ngOnInit() {
     this.caffService.searchCaffFile("").subscribe({
       next: caffs => {
-        this.caffs = caffs.map(caff => ({...caff, previewImage: toSafeUrl(caff.preview, this.sanitizer)}));
+        this.caffs = caffs;
         this.filteredCaffs = this.caffs;
       },
-      error: () => this.snackBar.error("Could not load CAFF files! The server probably can't be reached!")
+      error: () => this.snackBar.error("Could not load previews! The server probably can't be reached!")
     });
 
     this.showUploadButton = this.authService.hasRightToAccess(Authority.UploadCaff);
@@ -58,5 +55,10 @@ export class DashboardComponent implements OnInit {
 
   onUploadButtonClicked() {
     this.uploadDialog.open(UploadDialogComponent);
+  }
+
+  wpUrl(wp) {
+    return this.sanitizer.bypassSecurityTrustResourceUrl(
+      `//overpass-turbo.eu/map.html?Q=(%0A%20%20way(${wp})%3B%0A)%3B%20%20%0Aout%20geom%3B`)
   }
 }

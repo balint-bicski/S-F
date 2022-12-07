@@ -19,6 +19,7 @@ import javax.transaction.Transactional
 class CaffService(
     private val caffRepository: CaffRepository,
     private val commentRepository: CommentRepository,
+    private val participantRepository: ParticipantRepository,
     private val purchaseTokenRepository: PurchaseTokenRepository,
     private val userService: UserService,
     private val objectMapper: ObjectMapper
@@ -33,17 +34,37 @@ class CaffService(
         return commentRepository.findByCaffIdOrderByCreatedDate(caffId).map { it.toDto() }
     }
 
+    fun getParticipants(caffId: Long): List<ParticipantDto> {
+        return participantRepository.findByCaffId(caffId).map { it.toDto() }
+    }
+
     fun deleteComment(commentId: Long) {
         commentRepository.deleteById(commentId)
     }
 
+    fun deleteParticipant(participantId: Long) {
+        participantRepository.deleteById(participantId)
+    }
+
+
     fun createComment(caffId: Long, body: String): IdResponseDto {
         if (body.isEmpty()) throw IllegalArgumentException("Comment cannot be empty")
-        if (!caffRepository.existsById(caffId)) throw IllegalArgumentException("No such CAFF exists")
+        if (!caffRepository.existsById(caffId)) throw IllegalArgumentException("No such event exists")
         return IdResponseDto(
             commentRepository.save(
                 Comment(
                     caffId = caffId, creator = userService.currentUser().email, content = body
+                )
+            ).id
+        )
+    }
+
+    fun createParticipant(caffId: Long, userId: Long): IdResponseDto {
+        if (!caffRepository.existsById(caffId)) throw IllegalArgumentException("No such event exists")
+        return IdResponseDto(
+            participantRepository.save(
+                Participant(
+                    caffId = caffId, creator = userService.currentUser().email, participantId = userId
                 )
             ).id
         )
@@ -54,20 +75,8 @@ class CaffService(
     fun deleteCaffFile(id: Long) {
         commentRepository.deleteAllByCaffId(id)
         purchaseTokenRepository.deleteAllByCaffId(id)
+        participantRepository.deleteAllByCaffId(id)
         caffRepository.deleteById(id)
-        shell {
-            file("$rawFolder/$id.caff").delete()
-            file("$prevFolder/$id.bmp").delete()
-        }
-    }
-
-    fun downloadCaffFile(caffId: Long): InputStreamResource {
-        val userId = userService.currentUser().id!!
-        val token = purchaseTokenRepository.findByCaffIdAndUserId(caffId, userId).firstOrNull()
-        if (token != null) {
-            return getResource("$rawFolder/$caffId.caff")
-        }
-        throw Exception("Not authorized to download")
     }
 
     fun purchaseCaffFile(caffId: Long): PurchaseTokenDto {
@@ -88,83 +97,27 @@ class CaffService(
         return caffRepository.findByTitleContainingIgnoreCase(title).map { it.toSummary() }
     }
 
-    fun updateTitle(id: Long, title: String) {
-        val found = caffRepository.findById(id).orElseThrow { NoSuchElementException("No CAFF found with id: $id") }
+    fun updateTitle(id: Long, title: String, desc: String, time: String, wp: String) {
+        val found = caffRepository.findById(id).orElseThrow { NoSuchElementException("No event found with id: $id") }
         found.title = title
+        found.desc = desc
+        found.time = time
+        found.wp = wp
         caffRepository.save(found)
     }
 
     @Transactional
-    fun create(title: String, file: Resource): IdResponseDto {
-        val id = processIncomingCaff(
-            file.inputStream.readAllBytes(),
-            title,
+    fun create(title: String, desc: String, time: String, wp: String): IdResponseDto {
+        val caff = Caff(
+            null,
             userService.currentUser().email,
+            title,
+            desc,
+            time,
+            wp
         )
+
+        val id = caffRepository.save(caff).id
         return IdResponseDto(id)
-    }
-
-    private fun insertCaffIntoDB(parserOutput: String, title: String, uploader: String, fileSize: Int): Long? {
-        val parsedOutput = objectMapper.readValue(parserOutput, ParserOutput::class.java)
-        if (parsedOutput.success == "yes") {
-            if (parsedOutput.data?.previewCreated == "yes") {
-                val caff = Caff(
-                    null,
-                    parsedOutput.data.credits.creator,
-                    uploader,
-                    parsedOutput.data.credits.date.atOffset(ZoneOffset.UTC),
-                    parsedOutput.data.ciffCount,
-                    fileSize,
-                    title,
-                )
-                return caffRepository.save(caff).id
-            } else {
-                throw IllegalStateException("Parse successful but review not created. Aborting upload.")
-            }
-        } else {
-            print("Couldn't process uploaded CAFF: ")
-            println(parsedOutput.reason)
-            return null
-        }
-    }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    private fun processIncomingCaff(data: ByteArray, title: String, uploader: String): Long? {
-        var caffId: Long? = null
-        try {
-            shell {
-                //check if folder exists, create if no
-                File(rawFolder).mkdirs()
-                File(prevFolder).mkdirs()
-
-                //create temp file
-                file("$uploads/temp.caff").writeBytes(data)
-
-                //invoke parser
-                val parserOutput = StringBuilder()
-                pipeline { "parser/caff_parser $uploads/temp.caff $uploads/temp.bmp".process() pipe parserOutput }
-
-                //evaluate result
-                caffId = insertCaffIntoDB(parserOutput.toString(), title, uploader, data.size)
-
-                //move to
-                if (caffId != null) {
-                    file("$uploads/temp.caff").renameTo(file("$rawFolder/$caffId.caff"))
-                    file("$uploads/temp.bmp").renameTo(file("$prevFolder/$caffId.bmp"))
-                }
-            }
-            return caffId
-        } catch (ex: IOException) {
-            ex.printStackTrace()
-            return null
-        } catch (ex: IllegalStateException) {
-            ex.printStackTrace()
-            return null
-        } finally {
-            shell {
-                file("$uploads/temp.caff").delete()
-                file("$uploads/temp.bmp").delete()
-            }
-        }
     }
 }

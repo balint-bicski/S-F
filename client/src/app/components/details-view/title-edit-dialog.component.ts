@@ -12,19 +12,20 @@ export class TitleEditDialogComponent {
     private snackBar: SnackBarService,
     private caffService: CaffFileService,
     private dialog: MatDialogRef<TitleEditDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { caffId: number, originalTitle: string }
+    @Inject(MAT_DIALOG_DATA) public data: { caffId: number, originalTitle: string, originalDesc: string,
+      originalTime: string, originalWP: string }
   ) {
   }
 
-  saveNameChange(title: string) {
-    if (!title) {
-      this.snackBar.error("No title was given!");
+  saveNameChange(title: string, desc, time, wp) {
+    if (!title || !desc || !time || !wp) {
+      this.snackBar.error("Data is incomplete!");
       return;
     }
 
-    this.caffService.updateCaffFile(this.data.caffId, title).subscribe({
+    this.caffService.updateCaffFile(this.data.caffId, title, desc, time, wp).subscribe({
       next: () => this.closeDialog(true),
-      error: () => this.snackBar.error("Could not rename submission, make sure you have the proper permissions!")
+      error: () => this.snackBar.error("Could not edit submission, make sure you have the proper permissions!")
     })
   }
 

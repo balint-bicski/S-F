@@ -36,20 +36,20 @@ export class PaymentComponent implements OnInit {
   }
 
   onDownload() {
-    this.caffService.downloadCaffFile(this.caffId, this.token).subscribe({
-      next: data => {
-        const blob = new Blob([data], {type: 'application/octet-stream'});
-        const url = URL.createObjectURL(blob);
-
-        var link = document.createElement("a");
-        link.href = url;
-        link.download = "caff-" + this.caffId + ".caff";
-        link.click();
-
-        this.router.navigate(['/details/' + this.caffId]);
-        this.snackBar.success("CAFF file is successfully downloaded");
-      },
-      error: () => this.snackBar.error("Could not verify payment with server!")
-    });
+    // this.caffService.downloadCaffFile(this.caffId, this.token).subscribe({
+    //   next: data => {
+    //     const blob = new Blob([data], {type: 'application/octet-stream'});
+    //     const url = URL.createObjectURL(blob);
+    //
+    //     var link = document.createElement("a");
+    //     link.href = url;
+    //     link.download = "caff-" + this.caffId + ".caff";
+    //     link.click();
+    //
+    //     this.router.navigate(['/details/' + this.caffId]);
+    //     this.snackBar.success("CAFF file is successfully downloaded");
+    //   },
+    //   error: () => this.snackBar.error("Could not verify payment with server!")
+    // });
   }
 }

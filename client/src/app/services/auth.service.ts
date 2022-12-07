@@ -4,7 +4,7 @@ import {Observable} from 'rxjs';
 import {switchMap, tap} from 'rxjs/operators';
 import {getItemFromStorage, removeItemFromStorage, setItemInStorage} from '../util/session-storage.util';
 import {CURRENT_USER, TOKEN} from '../util/session-storage-constant';
-import {AuthenticationService, Authority, UserDto, UserService} from "../../../target/generated-sources";
+import {AuthenticationService, Authority, CaffDto, UserDto, UserService} from "../../../target/generated-sources";
 import {fromBase64} from "../util/encoding.util";
 
 export class JwtToken {
@@ -31,6 +31,13 @@ export class AuthService {
 
   hasRightToAccess(authority: Authority): boolean {
     return this.isUserLoggedIn && this.hasAuthority(authority);
+  }
+
+  hasRightToModify(caff : CaffDto, authority: Authority) {
+    if (caff == null) {
+      return this.hasRightToAccess(authority);
+    }
+    return this.hasRightToAccess(authority) && this.currentUser.email == caff.uploader;
   }
 
   authenticate(email, password): Observable<UserDto> {

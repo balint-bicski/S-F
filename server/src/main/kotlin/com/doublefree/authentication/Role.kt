@@ -12,7 +12,10 @@ enum class Role(private vararg val authorities: Authority) {
         Authority.UPLOAD_CAFF,
         Authority.SEARCH_CAFF,
         Authority.PAYMENT,
-        Authority.WRITE_NOTE
+        Authority.WRITE_NOTE,
+        Authority.MODIFY_CAFF,
+        Authority.DELETE_CAFF,
+        Authority.DELETE_NOTE
     );
 
     fun authorities() = authorities.toList()

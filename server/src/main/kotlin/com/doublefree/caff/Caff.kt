@@ -14,32 +14,29 @@ class Caff(
     val id: Long? = null,
 
     @Column(nullable = false)
-    val creator: String,
-
-    @Column(nullable = false)
     val uploader: String,
-
-    @Column(nullable = false)
-    val createdDate: OffsetDateTime,
-
-    @Column(nullable = false)
-    val ciffCount: Int,
-
-    @Column(nullable = false)
-    val size: Int,
 
     @Column(nullable = false)
     var title: String,
 
+    @Column(nullable = true)
+    var desc: String,
+
+    @Column(nullable = false)
+    var time: String,
+
+    @Column(nullable = false)
+    var wp: String,
+
     ) {
 
     fun toSummary(): CaffSummaryDto {
-        return CaffSummaryDto(title, id, getBytes("uploads/prev/$id.bmp"))
+        return CaffSummaryDto(title, id, wp)
     }
 
     fun toDto(): CaffDto {
         return CaffDto(
-            creator, id, uploader, createdDate, ciffCount, size, title, getBytes("uploads/prev/$id.bmp")
+             id, uploader, title, desc, time, wp,
         )
     }
 }

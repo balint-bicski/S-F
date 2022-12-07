@@ -117,12 +117,12 @@ paths:
   #
   /api/caff-files:
     post:
-      operationId: createCaffFile
+      operationId: createCaff
       requestBody:
         description: CaffFileDto
         required: true
         content:
-          multipart/form-data:
+          application/x-www-form-urlencoded;charset=UTF-8:
             schema:
               $ref: '#/components/schemas/CaffFileDto'
       responses:
@@ -192,12 +192,12 @@ paths:
     put:
       operationId: updateCaffFile
       requestBody:
-        description: title of caff file
+        description: CaffFileDto
         required: true
         content:
-          application/json:
+          application/x-www-form-urlencoded;charset=UTF-8:
             schema:
-              type: string
+              $ref: '#/components/schemas/CaffFileDto'
       responses:
         200:
           description: Operation successful
@@ -206,6 +206,7 @@ paths:
         #404:
       tags:
         - caff-file
+
 
   /api/caff-files/{id}/comments:
     parameters:
@@ -269,6 +270,80 @@ paths:
         #404:
       tags:
         - caff-file
+
+  /api/caff-files/{id}/participants:
+    parameters:
+      - $ref: '#/components/parameters/idPathParam'
+    get:
+      operationId: getParticipants
+      responses:
+        200:
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ParticipantDto'
+      tags:
+        - caff-file
+
+  /api/caff-files/{caffId}/{userId}/participants:
+    parameters:
+      - name: caffId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: userId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+    post:
+      operationId: addParticipant
+      responses:
+        201:
+          description: The new entity is created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdResponseDto'
+        #401:
+        #403:
+        #404:
+        422:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationExceptionDto'
+      tags:
+        - caff-file
+
+
+  /api/caff-files/{id}/participants/{participantId}:
+    parameters:
+      - $ref: '#/components/parameters/idPathParam'
+      - name: participantId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+    delete:
+      operationId: deleteParticipant
+      responses:
+        204:
+          description: Operation successful
+        #401:
+        #403:
+        #404:
+      tags:
+        - caff-file
+
 
   /api/caff-files/{id}/purchase:
     post:
@@ -378,11 +453,17 @@ components:
       properties:
         title:
           type: string
-        file:
-          $ref: '#/components/schemas/Binary'
+        desc:
+          type: string
+        time:
+          type: string
+        wp:
+          type: string
       required:
         - title
-        - file
+        - desc
+        - time
+        - wp
 
     CaffSummaryDto:
       type: object
@@ -392,8 +473,8 @@ components:
           format: int64
         title:
           type: string
-        preview:
-          $ref: '#/components/schemas/Byte'
+        wp:
+          type: string
       required:
         - title
 
@@ -405,21 +486,15 @@ components:
           format: int64
         uploader:
           type: string
-        createdDate:
-          type: string
-          format: date-time
-        creator:
-          type: string
-        ciffCount:
-          type: integer
-        size:
-          type: integer
         title:
           type: string
-        preview:
-          $ref: '#/components/schemas/Byte'
-      required:
-        - creator
+        desc:
+          type: string
+        time:
+          type: string
+        wp:
+          type: string
+
 
     PurchaseTokenDto:
       type: object
@@ -440,6 +515,19 @@ components:
           format: date-time
         content:
           type: string
+        caff:
+          $ref: '#/components/schemas/CaffDto'
+
+    ParticipantDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        creator:
+          type: string
+        participant:
+          $ref: '#/components/schemas/UserDto'
         caff:
           $ref: '#/components/schemas/CaffDto'
 

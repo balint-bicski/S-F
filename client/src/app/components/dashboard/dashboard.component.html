@@ -11,7 +11,7 @@
     </div>
 
     <div class="col-3 col-md-1 my-auto" *ngIf="showUploadButton">
-      <button (click)="onUploadButtonClicked()" class="w-100" color="primary" mat-raised-button>Upload</button>
+      <button (click)="onUploadButtonClicked()" class="w-100" color="primary" mat-raised-button>Create</button>
     </div>
   </div>
 
@@ -20,8 +20,10 @@
     <div *ngFor="let caff of filteredCaffs" class="col-12 col-md-4 my-2">
       <mat-card (click)="onListElementClicked(caff.id)">
         <mat-card-title>{{caff.title}}</mat-card-title>
-        <img alt="CAFF preview image" class="mt-2 px-3" mat-card-image
-             [src]="caff.previewImage | async">
+        <iframe title="eventMap" width="100%" height="300px"
+                [src]="wpUrl(caff.wp)">
+        </iframe>
+        <button (click)="onListElementClicked(caff.id)" class="w-100" color="primary" mat-raised-button>Details</button>
       </mat-card>
     </div>
   </div>
