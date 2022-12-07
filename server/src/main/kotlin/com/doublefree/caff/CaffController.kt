@@ -2,7 +2,6 @@ package com.doublefree.caff
 
 import com.doublefree.api.CaffFileApi
 import com.doublefree.api.model.*
-import org.springframework.core.io.Resource
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize

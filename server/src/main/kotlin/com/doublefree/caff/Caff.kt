@@ -2,8 +2,6 @@ package com.doublefree.caff
 
 import com.doublefree.api.model.CaffDto
 import com.doublefree.api.model.CaffSummaryDto
-import com.doublefree.util.FileUtil.Companion.getBytes
-import java.time.OffsetDateTime
 import javax.persistence.*
 
 @Entity

@@ -2,17 +2,9 @@ package com.doublefree.caff
 
 import com.doublefree.api.model.*
 import com.doublefree.user.UserService
-import com.doublefree.util.FileUtil.Companion.getResource
-import com.fasterxml.jackson.databind.ObjectMapper
-import eu.jrie.jetbrains.kotlinshell.shell.shell
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import org.springframework.core.io.InputStreamResource
-import org.springframework.core.io.Resource
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
-import java.io.File
-import java.io.IOException
-import java.time.ZoneOffset
 import javax.transaction.Transactional
 
 @Service
@@ -22,13 +14,7 @@ class CaffService(
     private val participantRepository: ParticipantRepository,
     private val purchaseTokenRepository: PurchaseTokenRepository,
     private val userService: UserService,
-    private val objectMapper: ObjectMapper
 ) {
-    companion object {
-        private const val uploads = "uploads"
-        private const val rawFolder = "$uploads/raw"
-        private const val prevFolder = "$uploads/prev"
-    }
 
     fun getComments(caffId: Long): List<CommentDto> {
         return commentRepository.findByCaffIdOrderByCreatedDate(caffId).map { it.toDto() }
