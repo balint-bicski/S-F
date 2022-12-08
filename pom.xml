@@ -11,10 +11,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
-    <groupId>com.doublefree</groupId>
-    <artifactId>doublefree</artifactId>
+    <groupId>com.sandf</groupId>
+    <artifactId>sandf</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>Doublefree root</name>
+    <name>SandF root</name>
     <packaging>pom</packaging>
 
     <properties>

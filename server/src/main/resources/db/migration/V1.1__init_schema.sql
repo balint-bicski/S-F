@@ -1,4 +1,4 @@
-create sequence doublefree_id_sequence start with 1 increment by 50;
+create sequence sandf_id_sequence start with 1 increment by 50;
 
 create table auth_user
 (

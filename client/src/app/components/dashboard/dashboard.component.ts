@@ -1,10 +1,10 @@
 import {Component, OnInit} from '@angular/core';
 import {AuthService} from "../../services/auth.service";
-import {Authority, CaffFileService, CaffSummaryDto} from "../../../../target/generated-sources";
+import {Authority, EventService, EventSummaryDto} from "../../../../target/generated-sources";
 import {DomSanitizer} from "@angular/platform-browser";
 import {Router} from "@angular/router";
 import {MatDialog} from "@angular/material/dialog";
-import {UploadDialogComponent} from "./upload-dialog.component";
+import {CreateDialogComponent} from "./create-dialog.component";
 import {SnackBarService} from "../../services/snack-bar.service";
 
 @Component({
@@ -12,35 +12,33 @@ import {SnackBarService} from "../../services/snack-bar.service";
   templateUrl: './dashboard.component.html'
 })
 export class DashboardComponent implements OnInit {
-  // Contains the full list of the caff summaries.
-  caffs: Array<CaffSummaryDto>;
+  // Contains the full list of the event summaries.
+  events: Array<EventSummaryDto>;
   // Contains a filtered array based on the filter text.
-  filteredCaffs: Array<CaffSummaryDto>;
+  filteredEvents: Array<EventSummaryDto>;
   filterText: string;
-
   // User information for conditional element display.
-  showUploadButton: boolean = false;
+  showCreateButton: boolean = false;
 
   constructor(
     private snackBar: SnackBarService,
     private sanitizer: DomSanitizer,
-    private uploadDialog: MatDialog,
+    private createDialog: MatDialog,
     private router: Router,
     private authService: AuthService,
-    private caffService: CaffFileService
+    private eventService: EventService
   ) {
   }
 
   ngOnInit() {
-    this.caffService.searchCaffFile("").subscribe({
-      next: caffs => {
-        this.caffs = caffs;
-        this.filteredCaffs = this.caffs;
+    this.eventService.searchEvent("").subscribe({
+      next: events => {
+        this.events = events;
+        this.filteredEvents = this.events;
       },
       error: () => this.snackBar.error("Could not load previews! The server probably can't be reached!")
     });
-
-    this.showUploadButton = this.authService.hasRightToAccess(Authority.UploadCaff);
+    this.showCreateButton = this.authService.hasRightToAccess(Authority.CreateEvent);
   }
 
   // Redirects when a card was clicked.
@@ -50,11 +48,11 @@ export class DashboardComponent implements OnInit {
 
   // Refills the filtered list when the filter text changes.
   onFilterChanged() {
-    this.filteredCaffs = this.caffs.filter(caff => caff.title.toLowerCase().includes(this.filterText.toLowerCase()));
+    this.filteredEvents = this.events.filter(event => event.title.toLowerCase().includes(this.filterText.toLowerCase()));
   }
 
-  onUploadButtonClicked() {
-    this.uploadDialog.open(UploadDialogComponent);
+  onCreateButtonClicked() {
+    this.createDialog.open(CreateDialogComponent);
   }
 
   wpUrl(wp) {

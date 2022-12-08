@@ -1,5 +1,5 @@
 import {Component, Input} from "@angular/core";
-import {Authority, CaffFileService, CommentDto} from "../../../../target/generated-sources";
+import {Authority, EventService, CommentDto} from "../../../../target/generated-sources";
 import {SnackBarService} from "../../services/snack-bar.service";
 import {FormControl, Validators} from "@angular/forms";
 import {AuthService} from "../../services/auth.service";
@@ -12,7 +12,6 @@ import {ConfirmDialogComponent} from "../details-view/confirm-dialog.component";
   templateUrl: './comments.component.html'
 })
 export class CommentsComponent {
-
   noteControl = new FormControl("", [Validators.required]);
   comments: Array<CommentDto> = [];
 
@@ -22,26 +21,26 @@ export class CommentsComponent {
 
   constructor(
     private snackBar: SnackBarService,
-    private caffService: CaffFileService,
+    private eventService: EventService,
     private authService: AuthService,
     private dialog: MatDialog,
   ) {
     this.decideUserPermissions();
   }
 
-  _caffId?: number;
+  _eventId?: number;
 
-  // The CAFF to retrieve the comments for, input attribute.
+  // The event to retrieve the comments for, input attribute.
   @Input()
-  set caffId(id: number) {
-    this._caffId = id;
+  set eventId(id: number) {
+    this._eventId = id;
     if (!!id) {
       this.loadComments();
     }
   };
 
   loadComments() {
-    this.caffService.getComments(this._caffId).subscribe({
+    this.eventService.getComments(this._eventId).subscribe({
       next: comments => {
         this.comments = comments.map(it => ({...it, createdDate: timestampPrettyPrint(it.createdDate)}))
       },
@@ -50,7 +49,7 @@ export class CommentsComponent {
   }
 
   sendComment() {
-    this.caffService.createComment(this._caffId, this.noteControl.value).subscribe({
+    this.eventService.createComment(this._eventId, this.noteControl.value).subscribe({
       next: () => {
         this.noteControl.reset();
         this.loadComments();
@@ -66,7 +65,7 @@ export class CommentsComponent {
     });
     dialogRef.afterClosed().subscribe(successModification => {
       if (successModification) {
-        this.caffService.deleteComment(this._caffId, commentId).subscribe({
+        this.eventService.deleteComment(this._eventId, commentId).subscribe({
           next: () => this.loadComments(),
           error: () => this.snackBar.error("Comment could not be removed!")
         });

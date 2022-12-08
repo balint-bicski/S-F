@@ -113,18 +113,18 @@ paths:
         - authentication
 
   #
-  #  CAFF api
+  #  Event api
   #
-  /api/caff-files:
+  /api/events:
     post:
-      operationId: createCaff
+      operationId: createEvent
       requestBody:
-        description: CaffFileDto
+        description: EventReducedDto
         required: true
         content:
           application/x-www-form-urlencoded;charset=UTF-8:
             schema:
-              $ref: '#/components/schemas/CaffFileDto'
+              $ref: '#/components/schemas/EventReducedDto'
       responses:
         201:
           description: The new entity is created
@@ -141,14 +141,14 @@ paths:
               schema:
                 $ref: '#/components/schemas/ValidationExceptionDto'
       tags:
-        - caff-file
+        - event
     get:
       parameters:
         - name: title
           in: query
           schema:
             type: string
-      operationId: searchCaffFile
+      operationId: searchEvent
       responses:
         200:
           description: Operation successful
@@ -157,30 +157,30 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/CaffSummaryDto'
+                  $ref: '#/components/schemas/EventSummaryDto'
       tags:
-        - caff-file
+        - event
 
-  /api/caff-files/{id}:
+  /api/events/{id}:
     parameters:
       - $ref: '#/components/parameters/idPathParam'
     get:
-      operationId: getCaffFile
+      operationId: getEvent
       responses:
         200:
           description: Operation successful
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CaffDto'
+                $ref: '#/components/schemas/EventDto'
         #401:
         #403:
         404:
           description: Not found
       tags:
-        - caff-file
+        - event
     delete:
-      operationId: deleteCaffFile
+      operationId: deleteEvent
       responses:
         204:
           description: Operation successful
@@ -188,16 +188,16 @@ paths:
         #403:
         #404:
       tags:
-        - caff-file
+        - event
     put:
-      operationId: updateCaffFile
+      operationId: updateEvent
       requestBody:
-        description: CaffFileDto
+        description: EventReducedDto
         required: true
         content:
           application/x-www-form-urlencoded;charset=UTF-8:
             schema:
-              $ref: '#/components/schemas/CaffFileDto'
+              $ref: '#/components/schemas/EventReducedDto'
       responses:
         200:
           description: Operation successful
@@ -205,10 +205,10 @@ paths:
         #403:
         #404:
       tags:
-        - caff-file
+        - event
 
 
-  /api/caff-files/{id}/comments:
+  /api/events/{id}/comments:
     parameters:
       - $ref: '#/components/parameters/idPathParam'
     post:
@@ -236,7 +236,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ValidationExceptionDto'
       tags:
-        - caff-file
+        - event
     get:
       operationId: getComments
       responses:
@@ -249,9 +249,9 @@ paths:
                 items:
                   $ref: '#/components/schemas/CommentDto'
       tags:
-        - caff-file
+        - event
 
-  /api/caff-files/{id}/comments/{commentId}:
+  /api/events/{id}/comments/{commentId}:
     parameters:
       - $ref: '#/components/parameters/idPathParam'
       - name: commentId
@@ -269,9 +269,9 @@ paths:
         #403:
         #404:
       tags:
-        - caff-file
+        - event
 
-  /api/caff-files/{id}/participants:
+  /api/events/{id}/participants:
     parameters:
       - $ref: '#/components/parameters/idPathParam'
     get:
@@ -286,11 +286,11 @@ paths:
                 items:
                   $ref: '#/components/schemas/ParticipantDto'
       tags:
-        - caff-file
+        - event
 
-  /api/caff-files/{caffId}/{userId}/participants:
+  /api/events/{eventId}/{userId}/participants:
     parameters:
-      - name: caffId
+      - name: eventId
         in: path
         required: true
         schema:
@@ -321,7 +321,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ValidationExceptionDto'
       tags:
-        - caff-file
+        - event
     delete:
       operationId: deleteParticipantbyUserId
       responses:
@@ -331,10 +331,10 @@ paths:
         #403:
         #404:
       tags:
-        - caff-file
+        - event
 
 
-  /api/caff-files/participants/{id}:
+  /api/events/participants/{id}:
     parameters:
       - $ref: '#/components/parameters/idPathParam'
     delete:
@@ -346,49 +346,8 @@ paths:
         #403:
         #404:
       tags:
-        - caff-file
+        - event
 
-
-  /api/caff-files/{id}/purchase:
-    post:
-      parameters:
-        - $ref: '#/components/parameters/idPathParam'
-      operationId: purchaseCaffFile
-      responses:
-        200:
-          description: Operation successful
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PurchaseTokenDto'
-        #401:
-        #403:
-        #404:
-      tags:
-        - caff-file
-
-  /api/caff-files/{id}/download:
-    get:
-      parameters:
-        - $ref: '#/components/parameters/idPathParam'
-        - name: token
-          in: query
-          required: true
-          schema:
-            type: string
-      operationId: downloadCaffFile
-      responses:
-        200:
-          description: Operation successful
-          content:
-            application/octet-stream:
-              schema:
-                $ref: '#/components/schemas/Binary'
-        #401:
-        #403:
-        #404:
-      tags:
-        - caff-file
 
 components:
   parameters:
@@ -452,7 +411,7 @@ components:
         jwtToken:
           type: string
 
-    CaffFileDto:
+    EventReducedDto:
       type: object
       properties:
         title:
@@ -469,7 +428,7 @@ components:
         - time
         - wp
 
-    CaffSummaryDto:
+    EventSummaryDto:
       type: object
       properties:
         id:
@@ -482,13 +441,13 @@ components:
       required:
         - title
 
-    CaffDto:
+    EventDto:
       type: object
       properties:
         id:
           type: integer
           format: int64
-        uploader:
+        creator:
           type: string
         title:
           type: string
@@ -499,12 +458,6 @@ components:
         wp:
           type: string
 
-
-    PurchaseTokenDto:
-      type: object
-      properties:
-        token:
-          type: string
 
     CommentDto:
       type: object
@@ -519,8 +472,8 @@ components:
           format: date-time
         content:
           type: string
-        caff:
-          $ref: '#/components/schemas/CaffDto'
+        event:
+          $ref: '#/components/schemas/EventDto'
 
     ParticipantDto:
       type: object
@@ -533,8 +486,8 @@ components:
         userId:
           type: integer
           format: int64
-        caff:
-          $ref: '#/components/schemas/CaffDto'
+        event:
+          $ref: '#/components/schemas/EventDto'
 
     ValidationExceptionDto:
       properties:
@@ -555,13 +508,11 @@ components:
     Authority:
       type: string
       enum:
-        - VIEW_CAFF
-        - DOWNLOAD_CAFF
-        - UPLOAD_CAFF
-        - DELETE_CAFF
-        - MODIFY_CAFF
-        - PAYMENT
-        - SEARCH_CAFF
+        - VIEW_EVENT
+        - CREATE_EVENT
+        - DELETE_EVENT
+        - MODIFY_EVENT
+        - SEARCH_EVENT
         - WRITE_NOTE
         - DELETE_NOTE
         - VIEW_USER

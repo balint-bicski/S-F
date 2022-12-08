@@ -9,17 +9,13 @@ import {DashboardComponent} from "./components/dashboard/dashboard.component";
 import {DetailsViewComponent} from "./components/details-view/details-view.component";
 import {UserListComponent} from "./components/user-list/user-list.component";
 import {Authority} from "../../target/generated-sources";
-import {PaymentComponent} from "./components/payment/payment.component";
 
 const routes: Routes = [
   {
     path: '', component: FrameComponent, children: [
       {path: '', pathMatch: 'full', redirectTo: 'dashboard'},
       {path: 'dashboard', component: DashboardComponent},
-      {path: 'details/:caffId', component: DetailsViewComponent},
-      {
-        path: 'details/:caffId/purchase', component: PaymentComponent,
-        canActivate: [AuthGuard], data: {authority: Authority.DownloadCaff}},
+      {path: 'details/:eventId', component: DetailsViewComponent},
       {
         path: 'users', component: UserListComponent,
         canActivate: [AuthGuard], data: {authority: Authority.ViewUser},

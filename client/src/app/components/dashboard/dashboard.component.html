@@ -1,5 +1,5 @@
 <div class="h-100 container mt-2">
-  <!-- Search bar and upload button -->
+  <!-- Search bar and Create button -->
   <div class="row my-2">
     <div class="col-9 col-md-11">
       <mat-card>
@@ -10,20 +10,20 @@
       </mat-card>
     </div>
 
-    <div class="col-3 col-md-1 my-auto" *ngIf="showUploadButton">
-      <button (click)="onUploadButtonClicked()" class="w-100" color="primary" mat-raised-button>Create</button>
+    <div class="col-3 col-md-1 my-auto" *ngIf="showCreateButton">
+      <button (click)="onCreateButtonClicked()" class="w-100" color="primary" mat-raised-button>Create</button>
     </div>
   </div>
 
-  <!-- CAFF list -->
+  <!-- Event list -->
   <div class="row mt-2">
-    <div *ngFor="let caff of filteredCaffs" class="col-12 col-md-4 my-2">
-      <mat-card (click)="onListElementClicked(caff.id)">
-        <mat-card-title>{{caff.title}}</mat-card-title>
+    <div *ngFor="let event of filteredEvents" class="col-12 col-md-4 my-2">
+      <mat-card (click)="onListElementClicked(event.id)">
+        <mat-card-title>{{event.title}}</mat-card-title>
         <iframe title="eventMap" width="100%" height="300px" loading="lazy"
-                [src]="wpUrl(caff.wp)">
+                [src]="wpUrl(event.wp)">
         </iframe>
-        <button (click)="onListElementClicked(caff.id)" class="w-100" color="primary" mat-raised-button>Details</button>
+        <button (click)="onListElementClicked(event.id)" class="w-100" color="primary" mat-raised-button>Details</button>
       </mat-card>
     </div>
   </div>

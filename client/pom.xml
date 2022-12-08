@@ -4,14 +4,14 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>com.doublefree</groupId>
-    <artifactId>doublefree</artifactId>
+    <groupId>com.sandf</groupId>
+    <artifactId>sandf</artifactId>
     <version>0.0.1-SNAPSHOT</version>
   </parent>
 
   <artifactId>client</artifactId>
   <version>0.0.1-SNAPSHOT</version>
-  <name>Doublefree client</name>
+  <name>SandF client</name>
   <packaging>pom</packaging>
 
   <build>

@@ -5,14 +5,14 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.doublefree</groupId>
-        <artifactId>doublefree</artifactId>
+        <groupId>com.sandf</groupId>
+        <artifactId>sandf</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
     <artifactId>server</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>Doublefree server</name>
+    <name>SandF server</name>
 
     <properties>
         <maven.compiler.target>11</maven.compiler.target>

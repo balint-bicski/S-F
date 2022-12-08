@@ -27,10 +27,9 @@ import {MatTableModule} from "@angular/material/table";
 import {DetailsViewComponent} from "./components/details-view/details-view.component";
 import {ApiModule} from "../../target/generated-sources";
 import {CommentsComponent} from "./components/comments/comments.component";
-import {PaymentComponent} from "./components/payment/payment.component";
-import {UploadDialogComponent} from "./components/dashboard/upload-dialog.component";
+import {CreateDialogComponent} from "./components/dashboard/create-dialog.component";
 import {MatDialogModule} from "@angular/material/dialog";
-import {TitleEditDialogComponent} from "./components/details-view/title-edit-dialog.component";
+import {EventEditDialogComponent} from "./components/details-view/event-edit-dialog.component";
 import {ConfirmDialogComponent} from "./components/details-view/confirm-dialog.component";
 
 @NgModule({
@@ -41,11 +40,10 @@ import {ConfirmDialogComponent} from "./components/details-view/confirm-dialog.c
     LogoutComponent,
     FrameComponent,
     DashboardComponent,
-    UploadDialogComponent,
+    CreateDialogComponent,
     DetailsViewComponent,
-    TitleEditDialogComponent,
+    EventEditDialogComponent,
     ConfirmDialogComponent,
-    PaymentComponent,
     CommentsComponent,
     UserListComponent
   ],

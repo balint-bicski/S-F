@@ -1,9 +1,9 @@
 <div class="h-100 container mt-2">
-  <!-- CAFF details -->
+  <!-- Event details -->
   <mat-card>
     <!-- Card title -->
     <mat-card-header>
-      <mat-card-title>{{caff?.title}}</mat-card-title>
+      <mat-card-title>{{event?.title}}</mat-card-title>
     </mat-card-header>
 
     <!-- Card body -->
@@ -37,21 +37,21 @@
                 Back
               </button>
             </div>
-            <div *ngIf="showPurchaseButton" class="col-6">
-              <button id="joinButton" (click)="onPurchaseButtonClicked()"
+            <div *ngIf="showJoinLeaveButton" class="col-6">
+              <button id="joinButton" (click)="onJoinLeaveButtonClicked()"
                       class="w-100" color="primary" mat-raised-button>
                 Join
               </button>
             </div>
           </div>
           <div class="row mt-3">
-            <div *ngIf="showTitleEditButton" class="col-6">
-              <button (click)="onEditTitleButtonClicked()" class="w-100" color="accent" mat-raised-button>
+            <div *ngIf="showEventEditButton" class="col-6">
+              <button (click)="onEditEventButtonClicked()" class="w-100" color="accent" mat-raised-button>
                 Edit event
               </button>
             </div>
             <div *ngIf="showDeleteButton" class="col-6">
-              <button (click)="onDeleteFileButtonClicked()" class="w-100" color="warn" mat-raised-button>
+              <button (click)="onDeleteEventButtonClicked()" class="w-100" color="warn" mat-raised-button>
                 Delete event
               </button>
             </div>
@@ -83,5 +83,5 @@
   </div>
 
   <!-- Comments-->
-  <app-comments [caffId]="caff?.id"></app-comments>
+  <app-comments [eventId]="event?.id"></app-comments>
 </div>
