@@ -50,7 +50,7 @@ class WebConfig(private val jwtAuthenticationFilter: JwtAuthenticationFilter) : 
         registry
             .addMapping("/**")
             .allowedMethods("*")
-            .allowedOrigins("http://localhost:4200")
+            .allowedOrigins("http://localhost:4200", "http://0.0.0.0:4200")
             .allowedHeaders("*")
             .allowCredentials(true)
     }
