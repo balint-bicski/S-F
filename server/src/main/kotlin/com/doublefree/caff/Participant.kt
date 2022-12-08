@@ -14,7 +14,7 @@ data class Participant(
     val creator: String?,
 
     @Column(nullable = false)
-    val participantId: Long,
+    val userId: Long,
 
     @Column(nullable = false)
     val caffId: Long,
@@ -22,5 +22,6 @@ data class Participant(
     fun toDto() = ParticipantDto(
         id,
         creator,
+        userId
     )
 }

@@ -61,8 +61,12 @@ class CaffController(
     }
 
     @PreAuthorize("hasAuthority(T(com.doublefree.api.model.Authority).DELETE_NOTE)")
-    override fun deleteParticipant(id: Long, participantId: Long): ResponseEntity<Unit> {
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(caffService.deleteParticipant(participantId))
+    override fun deleteParticipant(id: Long): ResponseEntity<Unit> {
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(caffService.deleteParticipant(id))
+    }
+
+    override fun deleteParticipantbyUserId(id: Long, userId: Long): ResponseEntity<Unit> {
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(caffService.deleteParticipantbyUserId(id, userId))
     }
 
     override fun getCaffFile(id: Long): ResponseEntity<CaffDto> {

@@ -322,17 +322,21 @@ paths:
                 $ref: '#/components/schemas/ValidationExceptionDto'
       tags:
         - caff-file
+    delete:
+      operationId: deleteParticipantbyUserId
+      responses:
+        204:
+          description: Operation successful
+        #401:
+        #403:
+        #404:
+      tags:
+        - caff-file
 
 
-  /api/caff-files/{id}/participants/{participantId}:
+  /api/caff-files/participants/{id}:
     parameters:
       - $ref: '#/components/parameters/idPathParam'
-      - name: participantId
-        in: path
-        required: true
-        schema:
-          type: integer
-          format: int64
     delete:
       operationId: deleteParticipant
       responses:
@@ -526,8 +530,9 @@ components:
           format: int64
         creator:
           type: string
-        participant:
-          $ref: '#/components/schemas/UserDto'
+        userId:
+          type: integer
+          format: int64
         caff:
           $ref: '#/components/schemas/CaffDto'
 

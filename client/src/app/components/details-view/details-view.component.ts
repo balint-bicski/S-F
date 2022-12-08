@@ -51,8 +51,8 @@ export class DetailsViewComponent {
   }
 
   onPurchaseButtonClicked() {
-    if (this.currentUserJoined()) {
-      this.caffService.deleteParticipant(this.caff.id, this.authService.currentUser.id).subscribe({
+    if (document.getElementById("joinButton").innerText == "Leave") {
+      this.caffService.deleteParticipantbyUserId(this.caff.id, this.authService.currentUser.id).subscribe({
         next: () => this.loadParticipants(),
         error: () => this.snackBar.error("Participant could not be removed!")
       });
@@ -62,7 +62,6 @@ export class DetailsViewComponent {
         this.caffService.addParticipant(this.caff.id, this.authService.currentUser.id).subscribe({
           next: () => {
             this.loadParticipants();
-            this.snackBar.success("Participation recorded");
           },
           error: () => this.snackBar.error("Participation could not be added!")
         });
@@ -112,8 +111,6 @@ export class DetailsViewComponent {
         this.loadDetailsTableContent(caff);
         this.loadParticipants();
         this.decideUserPermissions();
-        if (this.currentUserJoined())
-          document.getElementById("joinButton").innerText = "Leave";
       },
       error: () => this.snackBar.error("Could not load selected event! Either the server can't be reached, or no such event exists!")
     });
@@ -147,8 +144,11 @@ export class DetailsViewComponent {
 
   loadParticipants() {
     this.caffService.getParticipants(this.caff.id).subscribe({
-      next: participant => {
-        this.participants = participant.map(it => ({...it}))
+      next: participants => {
+        this.participants = participants;
+        if (this.currentUserJoined()) {
+          document.getElementById("joinButton").innerText = "Leave";
+        }
       },
       error: () => this.snackBar.error("Could not load participants! The server probably can't be reached!")
     });
@@ -160,15 +160,18 @@ export class DetailsViewComponent {
     });
     dialogRef.afterClosed().subscribe(successModification => {
       if (successModification) {
-        this.caffService.deleteParticipant(this.caff.id, participantId).subscribe({
+        this.caffService.deleteParticipant(participantId).subscribe({
           next: () => this.loadParticipants(),
           error: () => this.snackBar.error("Participant could not be removed!")
         });
+        this.loadParticipants();
       }
     });
   }
 
   currentUserJoined() {
-    return this.participants.some(p => p.participant.id == this.authService.currentUser.id)
+    if (this.participants.length == 0)
+      return false;
+    return this.participants.some(p => p.userId == this.authService.currentUser.id);
   }
 }

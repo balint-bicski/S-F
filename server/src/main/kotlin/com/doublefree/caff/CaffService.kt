@@ -28,8 +28,15 @@ class CaffService(
         commentRepository.deleteById(commentId)
     }
 
-    fun deleteParticipant(participantId: Long) {
-        participantRepository.deleteById(participantId)
+    fun deleteParticipant(id: Long) {
+        participantRepository.deleteById(id)
+    }
+
+    fun deleteParticipantbyUserId(caffId: Long, userId: Long) {
+        val participantToDelete = participantRepository.findByCaffId(caffId).find { p -> p.userId == userId }
+        if (participantToDelete != null) {
+            participantRepository.deleteById(participantToDelete.id!!)
+        }
     }
 
 
@@ -50,7 +57,7 @@ class CaffService(
         return IdResponseDto(
             participantRepository.save(
                 Participant(
-                    caffId = caffId, creator = userService.currentUser().email, participantId = userId
+                    caffId = caffId, creator = userService.currentUser().email, userId = userId
                 )
             ).id
         )
